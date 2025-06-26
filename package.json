@@ -1,0 +1,27 @@
+{
+  "name": "template",
+  "version": "1.0.0",
+  "description": "This is a template for repositories stored in the Codecademy Curriculum repo",
+  "main": "",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Codecademy-Curriculum/template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Codecademy-Curriculump/template/issues"
+  },
+  "homepage": "https://github.com/Codecademy-Curriculum/template#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "husky": "^7.0.0",
+    "prettier": "^2.3.2",
+    "prettier-eslint": "^13.0.0",
+    "pretty-quick": "^3.1.1"
+  }
+}
