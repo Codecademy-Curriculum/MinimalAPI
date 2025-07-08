@@ -20,9 +20,7 @@ Throughout course, we’ll use the .NET CLI inside Visual Studio Code (VS Code) 
 
 [Create a Minimal API with Visual Studio](https://learn.microsoft.com/en-us/aspnet/core/tutorials/min-web-api?view=aspnetcore-8.0&tabs=visual-studio)
 
-**Creating Your First Minimal API**
-
-To begin, you’ll use the command `dotnet new web -o Name` to create a new minimal API project. 
+To begin, you’ll use the command `dotnet new web -o Name` to create a new minimal API project. Here, `Name` is your desired project name.
 
 This will generate a ready-to-run API inside a folder. Once that’s created, you’ll use three CLI commands to work with it:
 
@@ -48,7 +46,7 @@ app.Run();
 In the above code:
 
 - `CreateBuilder()` sets up the app’s configuration and services.
-- `MapGet()` defines a GET endpoint at the root path (/). We shall learn more about this in the next exercise.
+- `MapGet()` defines a GET endpoint at the root path (`/`). We shall learn more about this in the next exercise.
 - `Run()` starts the web server and begins listening for requests.
 
 This is all it takes to create a working API with a single response.
