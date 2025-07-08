@@ -165,7 +165,58 @@ This is the kind of format most APIs use when talking to frontend applications o
 
 Hint: Use `new { name = "...", version = "..." }` to return an anonymous object.
 
-## Exercise 2: _Insert exercise title here._
+## Exercise 3: Working with Route Parameters
+
+### Narrative:
+
+So far, your API returned the same fixed message every time — like `“Hello World”` or the current time. But most real-world APIs need to respond based on what the user asks for. For example, if someone wants to see a product by ID or view a user profile by name, the API must react to different inputs. That’s where route parameters are used.
+
+A route parameter is a part of the URL that acts like a placeholder for values. For example:
+
+```cs
+app.MapGet("/greet/{name}", (string name) => $"Hello, {name}!");
+```
+
+Here, `{name}` is the route parameter. If you visit `/greet/Sam`, the `{name}` part captures `“Sam”` and passes it to the endpoint. The result will be `“Hello, Sam!”`
+
+Route parameters can also be limited by constraints. A constraint ensures the value matches a specific type — like an integer. For example:
+
+```cs
+app.MapGet("/api/items/{id:int}", (int id) => $"Item ID is: {id}");
+```
+
+This only works if the id is a number. If you try a word like `/api/items/apple`, it won’t match and the browser will show a **404 Not Found** error. That’s helpful — it stops invalid data from reaching your code.
+
+You can also use route parameters to return more useful responses. For example, return a message that includes a person’s name, or send back a custom JSON object.
+
+By learning route parameters, you can start building smarter APIs that respond based on what users ask for.
+
+### Instructions:
+
+1. Checkpoint: Create a GET endpoint that accepts any ID from the URL
+   
+Add a new route to capture an `id` value directly from the URL using a route parameter. Use the captured value to return a message like: `"You requested item with ID: 123"`.
+
+Hint: Use a pattern like `"/api/items/{id}"` and bind id as a string.
+
+2. Checkpoint: Restrict a route to accept only integer IDs
+
+Define another route that includes the `:int` constraint in the path.
+- The endpoint should return a message like: `"Item ID as integer: 42"`.
+- Try entering a word like `/hello` in place of the number — it should return a **404** page.
+  
+Hint: Add `:int` after `{id}` to only allow numbers.
+
+3. Checkpoint: Return a JSON object using a username from the route
+   
+Create an endpoint that captures a username value and returns a simple object with a message like:
+```json
+{ "message": "Profile for user: alex" }
+```
+  
+Hint: Return a result using `new { message = ... }`.
+
+## Exercise 3: _Insert exercise title here._
 
 ### Narrative:
 
@@ -173,7 +224,21 @@ Hint: Use `new { name = "...", version = "..." }` to return an anonymous object.
 
 1. Checkpoint: _Insert checkpoint text here._
 
+Hint: _Insert optional but """"" recommended hint text here._
+
+2. Checkpoint: _Insert checkpoint text here._
+
 Hint: _Insert optional but recommended hint text here._
+
+## Exercise 3: _Insert exercise title here._
+
+### Narrative:
+
+### Instructions:
+
+1. Checkpoint: _Insert checkpoint text here._
+
+Hint: _Insert optional but """"" recommended hint text here._
 
 2. Checkpoint: _Insert checkpoint text here._
 
