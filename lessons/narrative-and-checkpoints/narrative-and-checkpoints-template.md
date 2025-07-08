@@ -1,5 +1,76 @@
 # Introduction to Minimal API
 
+## Exercise 1: Getting Started with Minimal API
+
+### Narrative:
+
+Let’s say you want to build a small app — maybe to track tasks or record expenses — and you want to start quickly, without setting up controllers, models, or lots of configuration files. This is where Minimal APIs in ASP.NET Core come in.
+
+Minimal APIs in ASP.NET Core offer a fast, lightweight way to build HTTP APIs using just a single file—typically Program.cs. Unlike traditional ASP.NET Core apps that use controllers and models, Minimal APIs let you define routes and responses with minimal setup.
+
+Why use Minimal APIs?
+- Less boilerplate
+- Faster startup
+- Great for microservices or small APIs
+- Beginner-friendly
+
+**Tools You’ll Use**
+
+Throughout course, we’ll use the .NET CLI inside Visual Studio Code (VS Code) to stay focused on the essentials. If you'd like to compare how to do this in Visual Studio, you can refer to the official documentation:
+
+[Create a Minimal API with Visual Studio](https://learn.microsoft.com/en-us/aspnet/core/tutorials/min-web-api?view=aspnetcore-8.0&tabs=visual-studio)
+
+**Creating Your First Minimal API**
+
+To begin, you’ll use the command `dotnet new web -o Name` to create a new minimal API project. 
+
+This will generate a ready-to-run API inside a folder. Once that’s created, you’ll use three CLI commands to work with it:
+
+- `cd` command to navigate to your project folder
+- `dotnet build` compiles your project and checks for any errors.
+- `dotnet run` launches a local web server.
+
+You then copy the URL shown in the terminal (like `https://localhost:5001`) and paste it in your browser to view the API response.
+
+**(gif)**
+
+Here's what the default code in Program.cs looks like:
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.MapGet("/", () => "Hello World!");
+
+app.Run();
+```
+
+In the above code:
+
+- `CreateBuilder()` sets up the app’s configuration and services.
+- `MapGet()` defines a GET endpoint at the root path (/). We shall learn more about this in the next exercise.
+- `Run()` starts the web server and begins listening for requests.
+
+This is all it takes to create a working API with a single response.
+
+
+### Instructions:
+
+1. Checkpoint: Open the terminal and run a command that creates a new web app inside a folder called `MinimalApiDemo`.
+
+Hint: Use `dotnet new web -o Name` syntax to create your Minimal API project folder.
+   
+2. Checkpoint: Open the `Program.cs` file and locate the line that defines the `MapGet()` method. Change the response from "Hello World!" to a custom string of your choice, such as your name or a greeting. 
+
+Hint: Replace the string inside `() => "Hello World!"` with any other string, like `"Hi from Sarah!"`.
+
+3. Checkpoint: Using the terminal, navigate into the newly created folder and build the project to make sure all files and references are correctly configured. 
+
+4. Checkpoint: Run the application using the terminal. After the server starts, look for the HTTPS URL (such as `https://localhost:5001`) printed in the terminal — this is your API’s base address. Open this URL in the browser. You should see the custom message that you added within `MapGet()` method.
+
+Hint: Always use the full URL shown in the terminal — especially the HTTPS one.
+
+
 ## Exercise 2: Basic GET Endpoints 
 
 ### Narrative:
