@@ -1120,6 +1120,7 @@ Swagger isn't just a dev tool — it helps with:
 
 Even if you're building a small app alone, clear documentation = fewer bugs and less confusion.
 
+https://minimal-apis.github.io/quickstart/openapi.html#a-brief-introduction-to-openapi
 
 
 
