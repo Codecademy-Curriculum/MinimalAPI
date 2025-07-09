@@ -103,11 +103,14 @@ This is the essence of a Minimal API — just enough code to create and respond 
 ## Exercise # 2: Basic `GET` Endpoints 
 **Learning Standards**: 
 - In ASP.NET Core Minimal APIs, the `MapGet()` method is used to define `GET` endpoints that retrieve data from the API.
+
 ### Which course outcomes will be covered by this exercise?
+
 **Learners Will Be Able To**:
 * Use `MapGet()` to define static `GET` endpoints.
 * Understand how route paths map to endpoints.
 * Return various response types including strings, numbers, and objects.
+
 ### Narrative 
 In the previous exercise, you created and ran a minimal API project. You might have seen a line like this in the generated `Program.cs` file:
 ``` csharp
@@ -128,6 +131,7 @@ Now let’s add more endpoints to return:
 * A custom string
 * The current time
 * A JSON object
+
 ### Instructions
 **Checkpoint 1:** Add a new static GET endpoint that returns a string. To do this, add this new line just below the default route `/`:
 ``` csharp
@@ -165,11 +169,13 @@ app.MapGet("/info", () => new { name = "My API", version = "1.0" });
 ## Exercise # 3: Working with Route Parameters
 **Learning Standards**: 
 - In ASP.NET Core Minimal APIs, route parameters can be captured from the URL using parameter binding and constraints to validate input.
+
 ### Which course outcomes will be covered by this exercise?
 **Learners Will Be Able To**:
 * Use route parameters to capture values from URLs.
 * Apply route constraints to validate input.
 * Bind parameters directly to lambda inputs in `MapGet()`.
+
 ### Narrative 
 So far, your endpoints returned fixed responses like a string or the current time. But real-world APIs often need to work with dynamic input — for example, greeting different users or returning a specific item based on the URL. This is where route parameters come in.
 
@@ -259,20 +265,26 @@ Try with other usernames:
 /api/users/sam
 /api/users/guest42
 ```
-#### Exercise #4: Creating a Simple POST Endpoint
+## Exercise #4: Creating a Simple POST Endpoint
+
 **Learning Standards**: 
 - In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
+  
 ### Which course outcomes will be covered by this exercise?
+
 **Learners Will Be Able To**:
 * Use `MapPost()` to create a POST endpoint.
 * Understand how POST is used to send data to the server.
 * Return a success message using `Results.Created()`.
 * Test POST using the built-in Swagger UI.
+  
 ### Narrative
 So far, you've used `MapGet()` to return responses. Now, you'll learn how to use `MapPost()` to receive data.
 POST is used when the client wants to send data to the server — for example, when submitting a message or creating a new record.
 To test this easily, you'll also learn how to enable Swagger, a built-in UI for trying out API endpoints directly in your browser.
+
 ### Instructions
+
 **Checkpoint 1:** 
 Since we had used the `dotnet new web` template to create a new project, Swagger is not pre-configured. Follow these steps to enable Swagger in your project:
 
@@ -341,7 +353,9 @@ You should see:
 
 **Learning Standards**: 
 - In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
+  
 ### Which course outcomes will be covered by this exercise?
+
 **Learners Will Be Able To**:
 * Accept JSON data in a POST request.
 * Create a matching C# class for the expected data.
@@ -369,6 +383,7 @@ In this exercise, you’ll:
 Let’s get started.
 
 ### Instructions
+
 **Checkpoint 1:** 
 At the bottom of your `Program.cs` file, add the following C# class that matches the JSON structure below  `app.Run()`:
 ```csharp
@@ -406,7 +421,7 @@ In the browser, open Swagger by visiting `https://localhost:5001/swagger` (or wh
   "name": "Notebook"
 }
 ```
-4. Click ** Execute** 
+4. Click **Execute** 
 
 You should see:
 * Status: `201 Created`
@@ -450,8 +465,9 @@ You’ll store the products in a simple **in-memory list**, which is like a temp
 
 **Checkpoint 1:** 
 
-Define a Product class at the bottom of `Program.cs`by adding the following code:
-```csharp
+Define a Product class at the bottom of `Program.cs` by adding the following code after `app.Run()`:
+
+```cs
 public class Product
 {
     public int Id { get; set; }
@@ -465,59 +481,74 @@ This class defines the shape of each product. It has:
 * `Name`: the product's name (like “Notebook”)
 * `Price`: the product's cost
 
-Then, at the top of your `Program.cs`, right after `var app = `builder.Build();`, add this:
-```csharp
-var products = new List<Product>();
+Then, at the top of your `Program.cs`, right after `var app = builder.Build();`, add this:
+
+```cs
+var products_list = new List<Product>();
 ```
 This is a simple list that will hold the products temporarily in memory. It gets cleared when you restart the app — perfect for learning.
 
 Next, add a POST endpoint to add new products by adding the following to your existing endpoints:
 
-```csharp
-app.MapPost("/api/products", (Product product) =>
+```cs
+app.MapPost("/api/products", (Product pr) =>
 {
-    products.Add(product);
-    return Results.Created($"/api/products/{product.Id}", product);
+    products_list.Add(pr);
+    return Results.Created($"/api/products/{pr.Id}", pr);
 });
+```
 
-This:
-* Accepts a JSON Product from the client
-* Adds it to the list
+* Accepts a JSON Product (`pr`) from the client  
+* Adds it to the list (`products_list`)
 * Returns the product with a **201 Created** status
 
 Now, add a GET endpoint to fetch by `ID` (route parameter) by adding this:
 
-```csharp
+```cs
 app.MapGet("/api/products/{id}", (int id) =>
 {
-    var product = products.FirstOrDefault(p => p.Id == id);
-    return product is not null ? Results.Ok(product) : Results.NotFound();
+    foreach (var item in products_list)
+    {
+        if (item.Id == id)
+        {
+            return Results.Ok(item);
+        }
+    }
+    return Results.NotFound();
 });
 ```
 This:
-
 * Matches the `{id}` from the URL (e.g., `/api/products/2`)
-* Searches the list
+* Searches the list `products_list`
 * Returns the product or a `404` if not found
 
+       
 This shows route value binding in action: `{id}` in the URL is passed to the `(int id)` parameter.
 
 Next, add a GET endpoint to search by name (query string)
 Now add this:
 
-```csharp
-app.MapGet("/api/products/search", (string name) =>
+```cs
+app.MapGet("/api/products/search", (string search_name) =>
 {
-    var matches = products.Where(p => p.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
-    return Results.Ok(matches);
+    var product_found = new List<Product>();
+
+    foreach (var item in products_list)
+    {
+        if (item.Name != null && item.Name.ToLower().Contains(search_name.ToLower()))
+        {
+            product_found.Add(item);
+        }
+    }
+    return Results.Ok(product_found);
 });
 ```
  This:
 * Reads the `?name=...` from the URL (e.g., `/api/products/search?name=notebook`)
-* Searches the list for matching names
-* Returns the matching products as a list
+* Searches the list `products_list` for matching names
+* Returns the matching products as a list `product_found`
 
-This shows query string binding in action: `?name=value` is mapped to the (`string name`) parameter.
+This shows query string binding in action: `?name=value` is mapped to the (`search_name`) parameter.
 
 Save the file and run your app using `dotnet run`.
 In the browser, open Swagger by visiting `https://localhost:5001/swagger` (or whatever port is shown in your terminal). You’ll see Swagger UI listing your API endpoints.
@@ -528,12 +559,15 @@ In the browser, open Swagger by visiting `https://localhost:5001/swagger` (or wh
 * Go to POST `/api/products`
 * Click `"Try it out"`
 * Enter this JSON:
+  
 ```json
 {
   "id": 1,
   "name": "Notebook",
   "price": 149.99
 }
+```
+
 * Click **Execute**
 
 You should get:
@@ -546,7 +580,6 @@ You should get:
 * Enter `1` as the `ID`
 * Click **Execute**
 
-
 You should see:
 ```json
 {
@@ -554,6 +587,7 @@ You should see:
   "name": "Notebook",
   "price": 149.99
 }
+```
 
 3. Search by name using query string
 * Go to GET `/api/products/search`
