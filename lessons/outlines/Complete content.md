@@ -13,7 +13,7 @@
 * Explore the generated `Program.cs` file and understand the default route.
 * Access the default endpoint in a browser.
 
-#### Narrative
+### Narrative
 Imagine you're building a small app to track expenses, log workouts, or collect feedback — but you don’t want to create a dozen files just to accept one request. That’s exactly what Minimal APIs are built for.
 
 In this first exercise, you’ll learn how to create a new minimal API project using the .NET CLI and explore how this streamlined approach lets you define endpoints quickly — with just a few lines of code.
@@ -133,6 +133,7 @@ Now let’s add more endpoints to return:
 * A JSON object
 
 ### Instructions
+
 **Checkpoint 1:** Add a new static GET endpoint that returns a string. To do this, add this new line just below the default route `/`:
 ``` csharp
 app.MapGet("/hello", () => "Hello from /hello endpoint");
@@ -177,6 +178,7 @@ app.MapGet("/info", () => new { name = "My API", version = "1.0" });
 * Bind parameters directly to lambda inputs in `MapGet()`.
 
 ### Narrative 
+
 So far, your endpoints returned fixed responses like a string or the current time. But real-world APIs often need to work with dynamic input — for example, greeting different users or returning a specific item based on the URL. This is where route parameters come in.
 
 Let’s start with a simple example:
@@ -202,6 +204,7 @@ Route constraints act like built-in validation — they help ensure that the inp
 These patterns are the foundation for building real-world APIs that identify resources by ID, like `/users/{id}`, `/products/{id}`, or `/orders/{id}` — and prepare you to build `GET by ID`, `PUT`, and `DELETE` operations in upcoming exercises.
 
 ### Instructions
+
 **Checkpoint 1:** Create a `GET` endpoint with a route parameter. To do this, add the following line below the previous routes in your `Program.cs` file:
 ```csharp
 app.MapGet("/api/items/{id}", (string id) => $"You requested item with ID: {id}"); 
@@ -279,6 +282,7 @@ Try with other usernames:
 * Test POST using the built-in Swagger UI.
   
 ### Narrative
+
 So far, you've used `MapGet()` to return responses. Now, you'll learn how to use `MapPost()` to receive data.
 POST is used when the client wants to send data to the server — for example, when submitting a message or creating a new record.
 To test this easily, you'll also learn how to enable Swagger, a built-in UI for trying out API endpoints directly in your browser.
@@ -363,6 +367,7 @@ You should see:
 * Test the endpoint using Swagger UI.
 
 ### Narrative
+
 In the previous Exercise, you created a basic `POST` endpoint that accepted **plain text**. That was a great first step toward understanding how clients send data to a server.
 But in real-world applications, data is usually sent in a structured format like **JSON**. For example, when you add a new item to a shopping cart or create a user account, the client sends several values (like `id`, `name`, or `email`) bundled as a JSON object.
 
@@ -403,15 +408,19 @@ app.MapPost("/api/items", (Item item) =>
     return Results.Created($"/api/items/{item.Id}", item);
 });
 ```
+
 **What’s happening here?**
+
 * This route listens for a POST request at `/api/items`.
 * When a request comes in with a JSON body, ASP.NET automatically reads it and fills the Item object for you.
 * You send the same object back in the response with status code **201 Created**.
 
 Save the file and run your app using `dotnet run`.
+
 In the browser, open Swagger by visiting `https://localhost:5001/swagger` (or whatever port is shown in your terminal). You’ll see Swagger UI listing your API endpoints.
 
 **Checkpoint 2:** Test the JSON POST endpoint using Swagger by following these steps:
+
 1. Find: `POST /api/items`
 2. Click **"Try it out"**
 3. In the Request body, replace any default JSON with this:
@@ -424,6 +433,7 @@ In the browser, open Swagger by visiting `https://localhost:5001/swagger` (or wh
 4. Click **Execute** 
 
 You should see:
+
 * Status: `201 Created`
 * Response body:
 ```json
@@ -436,9 +446,11 @@ You should see:
 ## Exercise #6: Combining GET and POST — Resource Creation and Retrieval
 
 **Learning Standards**: 
+
 - In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies.
 
 ### Which course outcomes will be covered by this exercise?
+
 **Learners Will Be Able To**:
 * Use POST to add a new item with JSON data.
 * Use GET to retrieve:
@@ -477,6 +489,7 @@ public class Product
 ```
 
 This class defines the shape of each product. It has:
+
 * `Id`: a unique identifier (like 1, 2, 3…)
 * `Name`: the product's name (like “Notebook”)
 * `Price`: the product's cost
@@ -517,6 +530,7 @@ app.MapGet("/api/products/{id}", (int id) =>
     return Results.NotFound();
 });
 ```
+
 This:
 * Matches the `{id}` from the URL (e.g., `/api/products/2`)
 * Searches the list `products_list`
@@ -543,6 +557,7 @@ app.MapGet("/api/products/search", (string search_name) =>
     return Results.Ok(product_found);
 });
 ```
+
  This:
 * Reads the `?name=...` from the URL (e.g., `/api/products/search?name=notebook`)
 * Searches the list `products_list` for matching names
@@ -551,6 +566,7 @@ app.MapGet("/api/products/search", (string search_name) =>
 This shows query string binding in action: `?name=value` is mapped to the (`search_name`) parameter.
 
 Save the file and run your app using `dotnet run`.
+
 In the browser, open Swagger by visiting `https://localhost:5001/swagger` (or whatever port is shown in your terminal). You’ll see Swagger UI listing your API endpoints.
 
 **Checkpoint 2:** Test the JSON POST endpoint using Swagger by following these steps
@@ -571,6 +587,7 @@ In the browser, open Swagger by visiting `https://localhost:5001/swagger` (or wh
 * Click **Execute**
 
 You should get:
+
 * Status: 201 Created
 * Response: the product you added
 
@@ -581,6 +598,7 @@ You should get:
 * Click **Execute**
 
 You should see:
+
 ```json
 {
   "id": 1,
@@ -590,9 +608,519 @@ You should see:
 ```
 
 3. Search by name using query string
+   
 * Go to GET `/api/products/search`
 * Click `"Try it out"`
 * Enter `notebook` as the name
 * Click **Execute**
+
+## Exercise #7: Updating and Deleting Resources
+
+**Learning Standards**: 
+* In ASP.NET Core Minimal APIs, the `MapPut()` method is used to define **PUT** endpoints that update existing resources in the API.
+* In ASP.NET Core Minimal APIs, the `MapDelete()` method is used to define **DELETE** endpoints that remove resources from the API.
+  
+### Which course outcomes will be covered by this exercise?
+
+**Learners Will Be Able To**:
+
+* Use `MapPut()` to define a PUT endpoint that updates an existing resource using route parameters and body data
+* Use `MapDelete()` to define a DELETE endpoint that removes a resource using route parameters
+* Return appropriate HTTP status codes such as `200 OK`, `204 No Content`, and `404 Not Found`
+* Demonstrate full CRUD capability by integrating POST, GET, PUT, and DELETE in one app
+
+
+#### Narrative
+
+In earlier exercises, you created and retrieved items using POST and GET. Now, we'll complete the full CRUD cycle by learning how to update and delete items. This means you’ll be able to update existing data and remove it when it's no longer needed.
+
+**Updating resource:**
+
+To update a resource, we use the **PUT** method. In Minimal APIs, this is done with `MapPut()`. Just like `MapGet()` uses a route like `"/api/products/{id}"` to get a specific item, `MapPut()` uses a route with an ID to know which item to update. The updated data is sent in the request body as JSON.
+
+Here’s the basic structure:
+```cs
+app.MapPut("/items/{id}", (int id, Item updatedItem) =>
+{
+    // logic to update the item
+});
+```
+* `/items/{id}` means the client must specify the ID of the item to update.
+* `updatedItem` is the new data sent in the request body.
+
+**Deleting resource:**
+
+Just like `MapPost()` is used to create something and `MapPut()` is used to update something, `MapDelete()` is used to delete something from your API.
+
+Here’s the basic structure:
+```cs
+app.MapDelete("/items/{id}", (int id) => {
+    // logic to delete the item
+});
+```
+
+* The `"{id}"` part is a route parameter. It means the client must specify the ID of the item they want to delete.
+* The `id` is passed into the lambda function so we can use it to find the item.
+
+Both methods should return appropriate HTTP status codes:
+
+* **204 No Content** for a successful update or delete with no response body.
+* **404 Not Found** if the item doesn’t exist.
+* **200 OK** if you return the updated or deleted item as confirmation.
+
+### Instructions
+
+**Checkpoint 1:** Add a PUT Endpoint to Update Products
+
+To update a product, you need:
+
+* A route parameter to identify the product (`id`)
+* A JSON body with the updated data
+
+Below your existing endpoints, add this:
+
+```cs
+app.MapPut("/api/products/{id}", (int id, Product updated) =>
+{
+    for (int i = 0; i < products_list.Count; i++)
+    {
+        if (products_list[i].Id == id)
+        {
+            products_list[i] = updated;
+            return Results.Ok(updated);
+        }
+    }
+    return Results.NotFound();
+});
+```
+
+This:
+
+* Reads `{id}` from the route
+* Searches for a product with that ID
+* Replaces it with the new data from the request body
+* Returns:
+   - `200 OK` with the updated product if found
+   - `404 Not Found` if no product matches the ID
+
+This shows route parameter binding combined with a request body.
+
+**Checkpoint 2:** Test the PUT endpoint using Swagger
+
+1. Create a product first
+   
+* Go to `POST /api/products`
+* Use this sample:
+```json
+{
+  "id": 2,
+  "name": "Pen",
+  "price": 19.99
+}
+```
+
+2. Update that product
+
+* Go to `PUT /api/products/{id}`
+* Enter `2` for ID
+
+Use this updated JSON:
+
+```json
+{
+  "id": 2,
+  "name": "Premium Pen",
+  "price": 29.99
+}
+```
+
+Expected result:
+
+- Status: `200 OK`
+- The returned product shows the new name and price
+
+3. Try updating a non-existent ID
+
+- Enter `99` as ID and test again
+- You should get: `404 Not Found`
+  
+**Checkpoint 3:** Add a DELETE Endpoint to Remove Products
+
+To delete a product, you only need the `id` in the route.
+
+Add this below the PUT endpoint:
+
+```cs
+app.MapDelete("/api/products/{id}", (int id) =>
+{
+    var item_to_remove = products_list.FirstOrDefault(p => p.Id == id);
+    if (item_to_remove is null)
+    {
+        return Results.NotFound();
+    }
+
+    products_list.Remove(item_to_remove);
+    return Results.NoContent();
+});
+```
+
+This:
+
+- Uses `{id}` from the URL to find the product
+- Removes it from `products_list`
+
+Returns:
+- `204 No Content` if deletion is successful
+- `404 Not Found` if no match is found
+
+This completes the CRUD set using route parameter binding for deletion.
+
+**Checkpoint 4:** Test the DELETE endpoint using Swagger
+
+1. Add a product to delete
+
+Use `POST` to add:
+
+```json
+{
+  "id": 3,
+  "name": "Marker",
+  "price": 9.99
+}
+```
+
+2. Delete it
+
+- Go to `DELETE /api/products/{id}`
+- Enter `3` and click **Execute**
+
+**Expected result:**
+
+- Status: `204 No Content`
+- Product is removed
+
+3. Try deleting again
+
+- Enter `3` again
+- You should now get: `404 Not Found`
+
+
+You now have a complete working API that supports:
+
+- **POST** - Create products
+- **GET** - Read products
+- **PUT** - Update products
+- **DELETE** - Remove products
+
+You’ve also seen how ASP.NET Core handles different input sources:
+
+- Route parameters for id
+- JSON body for POST and PUT
+- Query strings for search
+
+You’ve completed the entire CRUD workflow for a minimal API!
+
+## Exercise #8: Basic Data Validation
+
+**Learning Standards**: 
+
+* In ASP.NET Core Minimal APIs, validation can be implemented using Data Annotations and the built-in validation framework.
+* In ASP.NET Core Minimal APIs, error handling can be implemented using exception handling middleware and standardized problem details responses.
+
+  
+### Which course outcomes will be covered by this exercise?
+
+**Learners Will Be Able To**:
+
+* Add validation rules using Data Annotations like `[Required]`, `[Range]`, `[StringLength]`, etc.
+* Automatically trigger validation during model binding
+* Return proper HTTP status codes (`400 Bad Request`) when data is invalid
+* Understand how to catch and respond to validation errors in a user-friendly way
+
+#### Narrative
+
+In the last exercise, you completed full CRUD using:
+
+- `POST`, `GET`, `PUT`, and `DELETE`
+- Route parameters, query strings, and JSON body binding
+
+So far, your API accepts any data — even invalid or empty values.
+
+Now, you’ll learn how to protect your API by:
+
+- Rejecting bad input (e.g., empty names, negative prices)
+- Returning clear error messages and `400 Bad Request` responses
+- Writing simple, automatic validations using attributes in the model
+
+This builds real-world habits. For example:
+
+- A shopping cart shouldn’t allow products with no name or price below 0
+- Users should see helpful error messages when they send bad input
+
+### Instructions
+
+**Checkpoint 1:** Add Validation Attributes to Your Model
+
+In your existing Product class, add Data Annotations to enforce rules.
+
+Go to the bottom of your `Program.cs` and update the `Product` class like this:
+
+```cs
+public class Product
+{
+    public int Id { get; set; }
+
+    [Required]
+    [StringLength(100, MinimumLength = 3)]
+    public string Name { get; set; }
+
+    [Range(0.01, 100000)]
+    public decimal Price { get; set; }
+}
+```
+
+What this means:
+
+- `[Required]`: `Name` must not be null or empty
+- `[StringLength]`: `Name` must be between `3` and `100` characters
+- `[Range]`: `Price` must be between `0.01` and `100000`
+
+These annotations are automatically checked during model binding when a client sends a request.
+
+But for validation to take effect, we must manually check ModelState in minimal APIs (unlike MVC).
+
+**Checkpoint 2:** Modify POST Endpoint to Validate Input
+
+Update your existing `POST` endpoint to check if the product is valid.
+
+Replace the existing `POST /api/products` endpoint with this:
+
+```cs
+app.MapPost("/api/products", (HttpContext context, Product pr) =>
+{
+    var validationResults = new List<ValidationResult>();
+    var validationContext = new ValidationContext(pr);
+
+    if (!Validator.TryValidateObject(pr, validationContext, validationResults, true))
+    {
+        return Results.BadRequest(validationResults);
+    }
+
+    products_list.Add(pr);
+    return Results.Created($"/api/products/{pr.Id}", pr);
+});
+```
+
+What this code does:
+
+- `ValidationContext`: tells the system what to validate
+- `TryValidateObject`: checks the model using your data annotations
+- If invalid &rarr; returns a `400 Bad Request` with the list of errors
+- If valid &rarr; proceeds to add the product and return `201 Created`
+
+**Checkpoint 3:** Test Validation with Swagger
+
+**Test 1: Valid product (should succeed)**
+
+Go to `POST /api/products`
+
+Use:
+
+```json
+{
+  "id": 10,
+  "name": "Gaming Keyboard",
+  "price": 199.99
+}
+```
+
+Expected Result:
+
+- Status: `201 Created`
+- Product is added
+
+**Test 2: Invalid product (short name, missing price)**
+
+```json
+{
+  "id": 11,
+  "name": "AB"
+}
+```
+
+Expected Result:
+
+- Status: `400 Bad Request`
+- Response body contains a list of errors:
+    - Name must be at least 3 characters
+    - Price is required and must be between 0.01 and 100000
+
+**Test 3: Negative price**
+
+```json
+{
+  "id": 12,
+  "name": "Desk",
+  "price": -10
+}
+```
+
+Expected:
+
+- Status: `400 Bad Request`
+- Error message: price must be >= 0.01
+
+**Checkpoint 4:** Add Basic Validation to PUT Endpoint
+
+Just like `POST`, you must validate incoming data in the `PUT` handler too.
+
+Update your existing `PUT` endpoint like this:
+
+```cs
+app.MapPut("/api/products/{id}", (int id, Product updated) =>
+{
+    var validationResults = new List<ValidationResult>();
+    var context = new ValidationContext(updated);
+
+    if (!Validator.TryValidateObject(updated, context, validationResults, true))
+    {
+        return Results.BadRequest(validationResults);
+    }
+
+    for (int i = 0; i < products_list.Count; i++)
+    {
+        if (products_list[i].Id == id)
+        {
+            products_list[i] = updated;
+            return Results.Ok(updated);
+        }
+    }
+
+    return Results.NotFound();
+});
+```
+
+This ensures that updates also go through validation. Invalid updates will be blocked with clear error responses.
+
+This exercise builds the foundation for better APIs by ensuring data correctness at the boundary.
+
+## Exercise #9: API Documentation with OpenAPI
+
+**Learning Standards**: 
+* In ASP.NET Core Minimal APIs, OpenAPI documentation can be automatically generated using built-in support for Swagger/OpenAPI specifications.
+
+  
+### Which course outcomes will be covered by this exercise?
+
+**Learners Will Be Able To**:
+
+### Narrative:
+
+- Enable OpenAPI/Swagger support in a minimal API project
+- Describe endpoints using metadata for better documentation
+- Use Swagger UI to test API endpoints interactively
+- Understand the benefits of auto-generated API documentation for teams and tools
+
+In Exercise 4, you briefly saw Swagger in action — it gave you a simple interface to test POST endpoints. Now, we’ll go deeper into OpenAPI, the underlying standard that powers Swagger.
+
+OpenAPI is a widely-used specification that lets APIs describe themselves in a machine-readable way. Tools like Swagger can read this description and generate:
+
+- Beautiful, interactive UIs for developers to explore and test endpoints
+- Up-to-date docs automatically from your code
+- Client SDKs and server mocks in other languages
+
+For Minimal APIs, OpenAPI support comes built-in. You only need to:
+
+- Enable the OpenAPI services and middleware
+- Add descriptions and summaries to your endpoints
+- Launch Swagger UI to try out all routes in a browser
+
+This is a critical skill for building modern APIs — especially in teams. Whether you’re onboarding a teammate or integrating with a mobile app, clear API documentation makes your work accessible and trustworthy.
+
+### Instructions:
+
+**Checkpoint 1:** Enable Swagger/OpenAPI Services and Middleware
+
+If you've completed Exercise 4, you may already have Swagger installed. If not, follow these steps:
+
+**Step 1:** Add Swagger services at the top of Program.cs:
+
+```csharp
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+```
+
+This enables OpenAPI generation for your endpoints.
+
+**Step 2:** Use Swagger middleware during app startup:
+
+After `var app = builder.Build();`, add this:
+
+```csharp
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+```
+
+This serves the Swagger JSON (`/swagger/v1/swagger.json`) and shows the interactive UI at `/swagger`.
+
+**Checkpoint 2:** Add Descriptions to Your Endpoints
+
+You can improve Swagger-generated docs by adding metadata using the `.WithName()` and `.WithSummary()` extensions on each endpoint.
+
+Here’s how to update an existing GET endpoint:
+
+```csharp
+app.MapGet("/api/products/{id}", (int id) =>
+{
+    var product = products_list.FirstOrDefault(p => p.Id == id);
+    return product is not null ? Results.Ok(product) : Results.NotFound();
+})
+.WithName("GetProductById")
+.WithSummary("Retrieves a product using its ID.");
+```
+
+**Explanation:**
+
+- `.WithName("...")`: Optional friendly name for documentation tools
+- `.WithSummary("...")`: Brief description shown in Swagger UI
+- You can also add `.WithDescription("...")` for longer explanations
+
+Repeat this pattern for your key endpoints (`POST`, `PUT`, `DELETE`) to make your docs more readable and self-explanatory.
+
+**Checkpoint 3:** Test API with Swagger UI
+
+Run your app using:
+
+```bash
+dotnet run
+```
+
+Then open your browser and go to:
+```bash
+https://localhost:5001/swagger
+```
+
+You should see:
+- All endpoints listed with their method and route
+- Descriptions beside each endpoint (if added)
+- Example request bodies and responses
+- Input boxes to try out live API calls
+
+**Checkpoint 4:** Understand the Value of OpenAPI
+
+Swagger isn't just a dev tool — it helps with:
+
+- Developer onboarding: Clear docs mean less confusion
+- Client integration: Frontend/mobile teams can test APIs early
+- Automation: Tools can generate client SDKs or mocks from OpenAPI JSON
+- Debugging: You can test all API behavior interactively
+
+Even if you're building a small app alone, clear documentation = fewer bugs and less confusion.
+
+
+
 
 
