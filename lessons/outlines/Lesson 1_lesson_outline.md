@@ -219,7 +219,7 @@ These checkpoints are designed to give hands-on practice with concepts introduce
 
 **Learning Standards**:
 
-* In ASP.NET Core Minimal APIs, use `MapPost()` method with model binding to accept and process JSON data as C# objects.
+* In ASP.NET Core Minimal APIs, the `MapPost()` method can be used with model binding to accept and process JSON data as C# objects.
 
 
 ### Which course outcomes will be covered by this exercise?
