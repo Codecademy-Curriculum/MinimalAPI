@@ -252,7 +252,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 - Demonstrate the testing capabilities that Swagger UI provides
 
 ## Exercise 10
-**Title**: Summary
+**Title**: Review
 
 **Learning Standards**: 
 - N/A
