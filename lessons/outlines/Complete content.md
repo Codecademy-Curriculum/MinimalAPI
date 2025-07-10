@@ -355,8 +355,10 @@ You should see:
 
 ## Exercise #5: Accepting JSON Using Model Binding
 
-**Learning Standards**: 
-- In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
+**Learning Standards**:
+
+* In ASP.NET Core Minimal APIs, the `MapPost()` method can be used with model binding to accept and process JSON data as C# objects.
+
   
 ### Which course outcomes will be covered by this exercise?
 
