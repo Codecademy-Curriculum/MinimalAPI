@@ -3,12 +3,6 @@
 ### Title
 Introduction to Minimal API
 
-### Resource(s)
-
-- [Microsoft Learn - .NET CLI](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-new)
-- [Microsoft Learn - Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/overview?view=aspnetcore-8.0)
-- [Microsoft Learn - OpenAPI support in minimal API apps](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/overview?view=aspnetcore-8.0)
-
 ### Description
 This lesson introduces ASP.NET Core Minimal APIs, a simplified approach for building fast HTTP APIs with .NET 8. Students will learn the fundamentals of creating lightweight, efficient APIs without the overhead of traditional controllers. Through hands-on exercises, students will master the basics of minimal API development, from simple endpoints to structured applications with proper organization, validation, and documentation.
 
@@ -164,15 +158,40 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 
   
 **Narrative**: 
--
+-Certainly! Here's the **Narrative** and **Checkpoints** for **Exercise 6: Combining GET and POST — Resource Creation and Retrieval**, following your requested format.
+
+---
+
+## Exercise 6
+
+**Title**: Combining GET and POST — Resource Creation and Retrieval
+
+**Learning Standards**:
+
+* In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies.
+
+**Narrative**:
+
+* Define a `Product` class with basic fields (`Id`, `Name`, `Price`) to represent data shape
+* Declare an in-memory list to temporarily store product data during app runtime
+* Map a `POST` endpoint that accepts JSON input and adds a new product to the list
+* Map a `GET` endpoint using a route parameter (`/api/products/{id}`) to fetch a product by ID
+* Map another `GET` endpoint using a query string (`/api/products/search?name=value`) to search by name
 
 **Checkpoints**:
-1. 
+
+* Create a C# `Product` class and an in-memory list to hold data
+* Define a `POST` endpoint that accepts JSON and stores new entries
+* Define a `GET` endpoint that retrieves data using route parameter binding
+* Define a `GET` endpoint that filters data using query string binding
+* Test all endpoints using Swagger to observe combined behavior
 
 **Notes**:
-- Show how POST complements GET for basic API functionality
 
-  
+* Reinforce real-world API patterns using creation and retrieval
+* Solidify understanding of route vs. query string inputs
+* Highlight how Swagger supports rapid iteration and testing across endpoints
+ 
 ## Exercise 7
 **Title**: Updating and Deleting Resources
 
@@ -182,7 +201,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 
 **Narrative**: 
 - Complete CRUD operations with `MapPut()` and `MapDelete()` methods
-- Use route parameters for resource identification (introduced in Exercise 2)
+- Use route parameters for resource identification
 - Show appropriate response codes for update and delete operations
 - Demonstrate full CRUD functionality working together
 
