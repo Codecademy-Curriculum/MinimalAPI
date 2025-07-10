@@ -22,7 +22,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 3. In ASP.NET Core Minimal APIs, the `MapGet()` method is used to define `GET` endpoints that retrieve data from the API. 
 4. In ASP.NET Core Minimal APIs, route parameters can be captured from the URL using parameter binding and constraints to validate input. 
 5. In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
-6. In ASP.NET Core Minimal APIs, use `MapPost()` method with model binding to accept and process JSON data as C# objects.
+6. In ASP.NET Core Minimal APIs, the `MapPost()` method can be used with model binding to accept and process JSON data as C# objects.
 7. In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies. 
 8. In ASP.NET Core Minimal APIs, the `MapPut()` method is used to define `PUT` endpoints that update existing resources in the API.
 9. In ASP.NET Core Minimal APIs, the `MapDelete()` method is used to define `DELETE` endpoints that remove resources from the API. 
@@ -84,7 +84,7 @@ By the end of the exercise, learners will have a working Minimal API and a found
 
 **Checkpoint 4:** Run the application and note the URLs where it is listening.
 
-**Checkpoint 5:** Access the root endpoint (`/`) in your web browser and verify it returns your updated custom response.
+**Checkpoint 5:** Access the root endpoint (`/`) in the web browser and verify it returns the updated custom response.
 
 #### What is the purpose of these checkpoints?
 
@@ -150,12 +150,12 @@ Code Editor | Terminal | Web Browser
   
 ### Narrative Summary
 
-This exercise shows how Minimal APIs let you capture values like IDs directly from the URL. Unlike frameworks that require route decorators, Minimal APIs bind parameters directly in the method signature.
+This exercise shows how Minimal APIs allows to capture values like IDs directly from the URL. Unlike frameworks that require route decorators, Minimal APIs bind parameters directly in the method signature.
 * Create a route like `/items/{id}` using `MapGet()`.
 * Explain how `{id}` binds to a parameter.
 * Add route constraint `/items/{id:int}`.
-* Show return based on ID: simulate a fake lookup.
-
+* Show return based on ID
+  
 ### Instructions
 
 **Checkpoint 1:** Create a GET endpoint with a route parameter named `{id}` and test it using values like `/api/items/123` or `/api/items/abc123`
@@ -200,15 +200,15 @@ By the end of this exercise, a working POST endpoint will be available that acce
 
 ### Instructions:
 
-**Checkpoint 1:** Enable Swagger UI in your Minimal API project and confirm that `/swagger` shows your existing `GET` endpoints.
+**Checkpoint 1:** Enable Swagger UI in the Minimal API project and confirm that `/swagger` shows the existing `GET` endpoints.
 
 **Checkpoint 2:** Add a `POST` endpoint at `/api/message` that accepts plain text from the request body and responds using `Results.Created()`.
 
-**Checkpoint 3:** Open Swagger UI, test the new `POST` endpoint by sending a custom message, and verify that the response includes your submitted input and a `201 Created` status.
+**Checkpoint 3:** Open Swagger UI, test the new `POST` endpoint by sending a custom message, and verify that the response includes the submitted input and a `201 Created` status.
 
 #### What is the purpose of these checkpoints?
 
-These checkpoints are designed to give you hands-on practice with concepts introduced in the summary. You’ll test your ability to configure API documentation, define a working POST endpoint, and verify its behavior using Swagger. Completing them reinforces your understanding of how data flows into a Minimal API and how to provide proper HTTP responses for creation actions.
+These checkpoints are designed to give hands-on practice with concepts introduced in the summary. The learners will test their ability to configure API documentation, define a working POST endpoint, and verify its behavior using Swagger. Completing them reinforces understanding of how data flows into a Minimal API and how to provide proper HTTP responses for creation actions.
 
 ### What would you like to have in the workspace for this exercise? Share your plan below.
 
@@ -278,7 +278,7 @@ This allows structured input to be handled easily without custom parsing logic. 
 
 #### What is the purpose of these checkpoints?
 
-These checkpoints allow you to apply model binding with a new data model of your own. You’ll practice defining a class, accepting structured input from JSON, and verifying that the binding and response work correctly. This ensures you can handle a variety of input types and design meaningful resource models.
+These checkpoints allows to apply model binding with a new data model of your own. The learners can practice defining a class, accepting structured input from JSON, and verifying that the binding and response work correctly. This ensures that the learners can handle a variety of input types and design meaningful resource models.
 
 ### What would you like to have in the workspace for this exercise? Share your plan below.
 
@@ -332,7 +332,7 @@ This practical example demonstrates how various types of model binding—route, 
 
 #### What is the purpose of these checkpoints?
 
-These checkpoints help you practice creating and retrieving resources through HTTP POST and GET methods. You will see how ASP.NET Core Minimal APIs handle data binding from JSON request bodies, URL route parameters, and query strings, enabling you to build basic but functional APIs.
+These checkpoints helps to practice creating and retrieving resources through HTTP POST and GET methods. The learners will see how ASP.NET Core Minimal APIs handle data binding from JSON request bodies, URL route parameters, and query strings, enabling to build basic but functional APIs.
 
 ### What would you like to have in the workspace for this exercise? Share your plan below.
 
@@ -362,7 +362,7 @@ To update a resource, the **PUT** HTTP method is used, defined in Minimal APIs v
 
 To delete a resource, the **DELETE** HTTP method is used via `MapDelete()`. It also uses a route parameter for the resource ID. If the item is found, it is removed from the list and a `204 No Content` response is sent; otherwise, a `404` is returned.
 
-This exercise demonstrates the full CRUD workflow — Create (`POS`T), Read (`GET`), Update (`PUT`), and Delete (`DELETE`) — showing how Minimal APIs handle route parameters, JSON body binding, and status codes.
+This exercise demonstrates the full CRUD workflow — Create (`POST`), Read (`GET`), Update (`PUT`), and Delete (`DELETE`) — showing how Minimal APIs handle route parameters, JSON body binding, and status codes.
 
 
 ### Instructions
