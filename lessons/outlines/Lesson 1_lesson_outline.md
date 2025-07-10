@@ -21,13 +21,14 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 2. In .NET, the `dotnet new web` command creates a new minimal API project with the basic structure and dependencies. 
 3. In ASP.NET Core Minimal APIs, the `MapGet()` method is used to define `GET` endpoints that retrieve data from the API. 
 4. In ASP.NET Core Minimal APIs, route parameters can be captured from the URL using parameter binding and constraints to validate input. 
-5. In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API. 
-6. In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies. 
-7. In ASP.NET Core Minimal APIs, the `MapPut()` method is used to define `PUT` endpoints that update existing resources in the API.
-8. In ASP.NET Core Minimal APIs, the `MapDelete()` method is used to define `DELETE` endpoints that remove resources from the API. 
-9. In ASP.NET Core Minimal APIs, validation can be implemented using Data Annotations and the built-in validation framework. 
-10. In ASP.NET Core Minimal APIs, error handling can be implemented using exception handling middleware and standardized problem details responses. 
-11. In ASP.NET Core Minimal APIs, OpenAPI documentation can be automatically generated using built-in support for Swagger/OpenAPI specifications.
+5. In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
+6. In ASP.NET Core Minimal APIs, use `MapPost()` method with model binding to accept and process JSON data as C# objects.
+7. In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies. 
+8. In ASP.NET Core Minimal APIs, the `MapPut()` method is used to define `PUT` endpoints that update existing resources in the API.
+9. In ASP.NET Core Minimal APIs, the `MapDelete()` method is used to define `DELETE` endpoints that remove resources from the API. 
+10. In ASP.NET Core Minimal APIs, validation can be implemented using Data Annotations and the built-in validation framework. 
+11. In ASP.NET Core Minimal APIs, error handling can be implemented using exception handling middleware and standardized problem details responses. 
+12. In ASP.NET Core Minimal APIs, OpenAPI documentation can be automatically generated using built-in support for Swagger/OpenAPI specifications.
 
 ## Exercise # 1: Getting Started with Minimal API
 
@@ -47,17 +48,17 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 
 ### Narrative Summary
 
-Imagine you're building a small app to track expenses, log workouts, or collect feedback — but you don’t want to create a dozen files just to accept one request. That’s exactly what Minimal APIs are built for.
+Imagine a scenario where a small application is needed to track expenses, log workouts, or collect feedback — but without the overhead of creating multiple files just to handle one request. This is exactly where Minimal APIs are most effective.
 
-Minimal APIs are a new way in ASP.NET Core to create web APIs with very little code. Unlike traditional ASP.NET Core apps, which use controllers, routing attributes, and multiple files, Minimal APIs let you define everything in one place, usually in `Program.cs`. This means less boilerplate code and faster startup times — ideal for microservices or simple APIs.
+Minimal APIs offer a streamlined approach in ASP.NET Core for building web APIs with minimal code. Unlike traditional ASP.NET Core applications that rely on controllers, routing attributes, and multiple files, Minimal APIs allow developers to define routes and logic in a single place — typically in `Program.cs`. This reduces boilerplate and accelerates startup time, making it ideal for microservices or lightweight APIs.
 
-You create a Minimal API project easily using the .NET CLI command:
+A Minimal API project can be created using the .NET CLI:
 
 ```bash
 dotnet new web -o Name
 ```
 
-This generates a project folder `"Name"` with the basic setup. Inside, `Program.cs` contains the minimal code needed to define a default route like this:
+This command generates a project folder named `"Name"` with essential setup. Inside, the `Program.cs` file contains the code to define the application and map a simple route:
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -68,9 +69,10 @@ app.MapGet("/", () => "Hello World!");
 app.Run();
 ```
 
-Here, `MapGet()` defines a GET HTTP endpoint at `/`, returning the string `"Hello World!"`. Running the app locally lets you visit this URL in a browser and see the response.
+In this example, `MapGet()` defines an HTTP GET endpoint at `/` that returns `"Hello World!"` as a response. Running the application locally and visiting the appropriate URL will display this message in the browser.
 
-By the end of this exercise, you'll have a simple Minimal API project running on your machine, understanding how it works under the hood and why it’s called “minimal.”
+By the end of the exercise, learners will have a working Minimal API and a foundational understanding of how it operates and why it's referred to as “minimal.”
+
 
 ### Instructions
 
@@ -187,13 +189,14 @@ In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` en
 
 ### Narrative Summary
 
-In this exercise, you’ll learn how to create a POST endpoint using `MapPost()` in a Minimal API. The POST method is commonly used when clients need to send data to the server — such as submitting a message or creating a new record.
+In this exercise, learners will learn how to create a POST endpoint using `MapPost()` in a Minimal API. The POST method is commonly used when clients need to send data to the server — such as submitting a message or creating a new record.
 
-You’ll define an endpoint at `/api/message` that accepts plain text from the request body and responds using `Results.Created()`, which returns an `HTTP 201` status code along with a confirmation message.
+An endpoint will be defined at `/api/message` that accepts plain text from the request body and responds using `Results.Created()`, which returns an `HTTP 201` status code along with a confirmation message.
 
-To make testing easier, you’ll enable Swagger UI, a built-in interactive interface for trying out API endpoints in your browser. Since Swagger is not enabled by default in minimal API projects created with `dotnet new web`, you'll first configure it by adding required services and middleware in Program.cs.
+To make testing easier, Swagger UI will be enabled — a built-in interactive interface for trying out API endpoints in the browser. Since Swagger is not enabled by default in minimal API projects created with `dotnet new web`, it must first be configured by adding the required services and middleware in `Program.cs`.
 
-By the end of this exercise, you'll have a working POST endpoint that accepts input and returns confirmation — all tested through Swagger without needing external tools.
+By the end of this exercise, a working POST endpoint will be available that accepts input and returns confirmation — all tested through Swagger without needing external tools.
+
 
 ### Instructions:
 
@@ -216,7 +219,7 @@ These checkpoints are designed to give you hands-on practice with concepts intro
 
 **Learning Standards**:
 
-* In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
+* In ASP.NET Core Minimal APIs, use `MapPost()` method with model binding to accept and process JSON data as C# objects.
 
 
 ### Which course outcomes will be covered by this exercise?
@@ -230,9 +233,9 @@ These checkpoints are designed to give you hands-on practice with concepts intro
 
 ### Narrative Summary
 
-In the previous exercise, you built a `POST` endpoint that accepted plain text. But most modern APIs exchange structured data using **JSON** — a lightweight format used to send multiple fields in one request.
+In the previous exercise, a `POST` endpoint was created to accept plain text. However, most modern APIs exchange structured data using **JSON** — a lightweight format used to send multiple fields in one request.
 
-Instead of manually reading and parsing JSON, ASP.NET Core uses **model binding**: it automatically maps JSON input to a C# class. You define a model with properties like `Id` and `Name`, and when a JSON object is sent, ASP.NET fills in that object for you.
+Instead of manually reading and parsing JSON, ASP.NET Core uses **model binding**, which automatically maps JSON input to a C# class. A model can be defined with properties like `Id` and `Name`, and when a JSON object is sent, ASP.NET fills in that object during the request handling.
 
 For example, sending:
 
@@ -243,7 +246,7 @@ For example, sending:
 }
 ```
 
-…will be automatically deserialized into an `Item` object if you define:
+…will automatically be deserialized into an `Item` object when the following model is defined:
 
 ```cs
 public class Item
@@ -253,7 +256,8 @@ public class Item
 }
 ```
 
-This makes it easy to work with structured input without extra parsing logic. You’ll test this using Swagger, just like in the last exercise, by sending JSON from the browser and seeing the structured response returned with a `201 Created` status.
+This allows structured input to be handled easily without custom parsing logic. Testing will be done using Swagger, where JSON can be submitted through the browser and the structured response is returned with a `201 Created` status.
+
 
 ### Instructions
 
@@ -298,15 +302,16 @@ Code Editor | Terminal | Web Browser
 
 ### Narrative Summary
 
-In this exercise, we will combine POST and GET methods to build a simple product API. We will use an in-memory list to store products during the app runtime.
+In this exercise, the POST and GET methods are combined to build a simple product API using an in-memory list to store products during the app runtime.
 
 Learners will create:
 
-* A POST endpoint to add products using JSON data.
-* A GET endpoint that retrieves a product by its ID via a route parameter.
-* A GET endpoint that searches for products by name using a query string parameter.
+* A `POST` endpoint to add products using JSON data.
+* A `GET` endpoint to retrieve a product by its ID using a route parameter.
+* A `GET` endpoint to search for products by name using a query string parameter.
 
-This practical example demonstrates how different types of model binding work together to enable basic API operations for creating and retrieving resources.
+This practical example demonstrates how various types of model binding—route, query string, and body—work together to support basic API operations for creating and retrieving resources.
+
 
 ### Instructions
 
@@ -355,9 +360,9 @@ Previous exercises covered creating and retrieving products with POST and GET en
 
 To update a resource, the **PUT** HTTP method is used, defined in Minimal APIs via `MapPut()`. This requires a route parameter to identify the resource (such as an ID) and a JSON body with the updated data. When a client sends a PUT request with a matching ID, the API updates the existing product and returns the updated resource or a 404 if not found.
 
-To delete a resource, the **DELETE** HTTP method is used via `MapDelete()`. It also uses a route parameter for the resource ID. If the item is found, it is removed from the list and a `204 No Content` response is sent; otherwise, a 404 is returned.
+To delete a resource, the **DELETE** HTTP method is used via `MapDelete()`. It also uses a route parameter for the resource ID. If the item is found, it is removed from the list and a `204 No Content` response is sent; otherwise, a `404` is returned.
 
-This exercise demonstrates the full CRUD workflow — Create (POST), Read (GET), Update (PUT), and Delete (DELETE) — showing how Minimal APIs handle route parameters, JSON body binding, and status codes.
+This exercise demonstrates the full CRUD workflow — Create (`POS`T), Read (`GET`), Update (`PUT`), and Delete (`DELETE`) — showing how Minimal APIs handle route parameters, JSON body binding, and status codes.
 
 
 ### Instructions
