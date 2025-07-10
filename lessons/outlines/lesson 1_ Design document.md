@@ -16,17 +16,19 @@ This lesson introduces ASP.NET Core Minimal APIs, a simplified approach for buil
 Create production-ready minimal APIs using .NET 8 with proper project organization, data validation, error handling, and documentation.
 
 ### Learning Standards
-1. In ASP.NET Core, Minimal APIs are a simplified approach for building fast HTTP APIs with minimal code and configuration, ideal for microservices and apps that require minimal dependencies. [Microsoft Learn - Minimal APIs Overview](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/overview?view=aspnetcore-8.0)
-2. In .NET, the `dotnet new webapi --minimal` command creates a new minimal API project with the basic structure and dependencies. [Microsoft Learn - .NET CLI](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-new)
-3. In ASP.NET Core Minimal APIs, the `MapGet()` method is used to define `GET` endpoints that retrieve data from the API. [Microsoft Learn - Minimal APIs Quick Reference](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-8.0)
-4. In ASP.NET Core Minimal APIs, route parameters can be captured from the URL using parameter binding and constraints to validate input. [Microsoft Learn - Minimal APIs Quick Reference](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-8.0)
-5. In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API. [Microsoft Learn - Minimal APIs Quick Reference](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-8.0)
-6. In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies. [Microsoft Learn - Minimal APIs Quick Reference](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-8.0)
-7. In ASP.NET Core Minimal APIs, the `MapPut()` method is used to define `PUT` endpoints that update existing resources in the API. [Microsoft Learn - Minimal APIs Quick Reference](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-8.0)
-8. In ASP.NET Core Minimal APIs, the `MapDelete()` method is used to define `DELETE` endpoints that remove resources from the API. [Microsoft Learn - Minimal APIs Quick Reference](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-8.0)
-9. In ASP.NET Core Minimal APIs, validation can be implemented using Data Annotations and the built-in validation framework. [Microsoft Learn - Model validation in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-8.0)
-10. In ASP.NET Core Minimal APIs, error handling can be implemented using exception handling middleware and standardized problem details responses. [Microsoft Learn - Handle errors in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling?view=aspnetcore-8.0)
-11. In ASP.NET Core Minimal APIs, OpenAPI documentation can be automatically generated using built-in support for Swagger/OpenAPI specifications. [Microsoft Learn - OpenAPI support in minimal API apps](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/openapi?view=aspnetcore-8.0)
+1. In ASP.NET Core, Minimal APIs are a simplified approach for building fast HTTP APIs with minimal code and configuration, ideal for microservices and apps that require minimal dependencies. 
+2. In .NET, the `dotnet new web` command creates a new minimal API project with the basic structure and dependencies. 
+3. In ASP.NET Core Minimal APIs, the `MapGet()` method is used to define `GET` endpoints that retrieve data from the API. 
+4. In ASP.NET Core Minimal APIs, route parameters can be captured from the URL using parameter binding and constraints to validate input. 
+5. In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
+6. In ASP.NET Core Minimal APIs, use `MapPost()` method with model binding to accept and process JSON data as C# objects.
+7. In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies. 
+8. In ASP.NET Core Minimal APIs, the `MapPut()` method is used to define `PUT` endpoints that update existing resources in the API.
+9. In ASP.NET Core Minimal APIs, the `MapDelete()` method is used to define `DELETE` endpoints that remove resources from the API. 
+10. In ASP.NET Core Minimal APIs, validation can be implemented using Data Annotations and the built-in validation framework. 
+11. In ASP.NET Core Minimal APIs, error handling can be implemented using exception handling middleware and standardized problem details responses. 
+12. In ASP.NET Core Minimal APIs, OpenAPI documentation can be automatically generated using built-in support for Swagger/OpenAPI specifications.
+
 
 ### Lesson Outline
 
@@ -35,7 +37,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 
 **Learning Standards**: 
 - In ASP.NET Core, Minimal APIs are a simplified approach for building fast HTTP APIs with minimal code and configuration, ideal for microservices and apps that require minimal dependencies.
-- In .NET, the `dotnet new webapi --minimal` command creates a new minimal API project with the basic structure and dependencies.
+- In .NET, the `dotnet new webapi` command creates a new minimal API project with the basic structure and dependencies.
 
 **Narrative**: 
 - Define Minimal APIs and contrast with traditional controller-based approaches
@@ -105,31 +107,73 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 - Prepare students for using parameters in PUT/DELETE operations
 
 ## Exercise 4
-**Title**: Creating Resources with MapPost()
+**Title**: Creating Resources with `MapPost()`
 
 **Learning Standards**: 
 - In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
-- In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies.
 
 **Narrative**: 
+
 - Focus on `MapPost()` method for creating new resources
-- Introduce model binding through JSON request body handling
-- Demonstrate automatic deserialization of JSON to C# objects
-- Show proper response codes and basic resource creation patterns
+- Explain that POST is commonly used when sending data to the server, such as submitting messages or creating records.
+- Demonstrate enabling Swagger UI for easy API testing in the browser.
+- Clarify that minimal API projects created with `dotnet new web` do not have Swagger enabled by default and require setup.
 
 **Checkpoints**:
-1. Create `POST` endpoints that accept JSON data in request bodies
-2. Demonstrate automatic model binding from JSON to C# objects
-3. Return appropriate status codes for successful resource creation
-4. Test `POST` endpoints using simple HTTP tools
+
+1. Enable Swagger for interactive API testing.
+2. Create a simple POST endpoint accepting plain text.
+3. Test the POST endpoint using Swagger UI.
 
 **Notes**:
 - Build on the solid GET foundation from previous exercises
-- Introduce model binding as an automatic process
 - Focus on fundamental POST patterns without complex business logic
-- Show how POST complements GET for basic API functionality
+- Emphasize testing endpoints through Swagger’s interactive UI.
 
 ## Exercise 5
+
+**Title**: Accepting JSON Using Model Binding
+
+**Learning Standards**: 
+- In ASP.NET Core Minimal APIs, use `MapPost()` method with model binding to accept and process JSON data as C# objects.
+  
+**Narrative**: 
+- Build on accepting plain text POST requests by handling JSON input.
+- Use model binding to automatically convert JSON data into a C# object.
+- Define a C# class to represent the expected JSON structure with properties like `Id` and `Name`.
+- Send JSON objects in requests to have them deserialized into the model automatically.
+- Simplify input handling by avoiding manual JSON parsing.
+- Test the JSON POST endpoint interactively using Swagger UI.
+
+**Checkpoints**:
+1. Define a C# model class matching expected JSON structure.
+2. Create a POST endpoint that accepts the model as input.
+3. Use Swagger to test sending JSON and receiving structured responses. Return the created object with an HTTP 201 response.
+
+**Notes**:
+- Build on the plain text POST endpoint from the previous exercise
+- Focus on JSON model binding as a key concept for structured input
+- Reinforce defining simple C# model classes to match incoming JSON
+- Emphasize testing endpoints interactively using Swagger UI
+
+## Exercise 6
+**Title**: Combining GET and POST — Resource Creation and Retrieval
+
+**Learning Standards**: 
+- In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies.
+
+  
+**Narrative**: 
+-
+
+**Checkpoints**:
+1. 
+
+**Notes**:
+- Show how POST complements GET for basic API functionality
+
+  
+## Exercise 7
 **Title**: Updating and Deleting Resources
 
 **Learning Standards**: 
@@ -154,8 +198,8 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 - Emphasize proper HTTP status codes for different operations
 - Show how all CRUD operations work together as a complete API
 
-## Exercise 6
-**Title**: Basic Data Validation
+## Exercise 8
+**Title**: Basc Data Validation
 
 **Learning Standards**: 
 - In ASP.NET Core Minimal APIs, validation can be implemented using Data Annotations and the built-in validation framework.
@@ -179,7 +223,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 - Show how validation integrates naturally with model binding
 - Emphasize the importance of proper HTTP status codes
 
-## Exercise 7
+## Exercise 9
 **Title**: API Documentation with OpenAPI
 
 **Learning Standards**: 
@@ -203,7 +247,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 - Show how minimal APIs make it easy to generate comprehensive documentation
 - Demonstrate the testing capabilities that Swagger UI provides
 
-## Exercise 8
+## Exercise 10
 **Title**: Summary
 
 **Learning Standards**: 
