@@ -3,6 +3,12 @@
 ### Title
 Introduction to Minimal API
 
+### Resource(s)
+
+- [Microsoft Learn - .NET CLI](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-new)
+- [Microsoft Learn - Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/overview?view=aspnetcore-8.0)
+- [Microsoft Learn - OpenAPI support in minimal API apps](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/overview?view=aspnetcore-8.0)
+
 ### Description
 This lesson introduces ASP.NET Core Minimal APIs, a simplified approach for building fast HTTP APIs with .NET 8. Students will learn the fundamentals of creating lightweight, efficient APIs without the overhead of traditional controllers. Through hands-on exercises, students will master the basics of minimal API development, from simple endpoints to structured applications with proper organization, validation, and documentation.
 
