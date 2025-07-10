@@ -1014,12 +1014,12 @@ This exercise builds the foundation for better APIs by ensuring data correctness
 
 **Learners Will Be Able To**:
 
-### Narrative:
-
 - Enable OpenAPI/Swagger support in a minimal API project
 - Describe endpoints using metadata for better documentation
 - Use Swagger UI to test API endpoints interactively
 - Understand the benefits of auto-generated API documentation for teams and tools
+
+### Narrative:
 
 In Exercise 4, you briefly saw Swagger in action — it gave you a simple interface to test POST endpoints. Now, we’ll go deeper into OpenAPI, the underlying standard that powers Swagger.
 
