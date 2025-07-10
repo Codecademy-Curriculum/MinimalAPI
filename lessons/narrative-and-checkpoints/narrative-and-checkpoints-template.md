@@ -216,9 +216,47 @@ Create an endpoint that captures a username value and returns a simple object wi
   
 Hint: Return a result using `new { message = ... }`.
 
-## Exercise 3: _Insert exercise title here._
+## Exercise 4: Creating a Simple POST Endpoint
+
 
 ### Narrative:
+
+In earlier exercises, you used `MapGet()` to return responses. Now, you’ll use `MapPost()` to **accept** data from the client — such as form submissions or resource creation.
+
+The **POST** method is designed for sending data to the server. For example, imagine submitting a feedback form or creating a new record. Minimal APIs make this easy using `MapPost()`.
+
+Here’s a basic example:
+
+```csharp
+app.MapPost("/api/message", (string body) =>
+{
+    return Results.Created("/api/message", $"You sent: {body}");
+});
+```
+
+This defines a POST endpoint at `/api/message`, reads plain text from the request body, and returns a `201 Created` response with a confirmation message. `Results.Created()` is a helper that generates a proper HTTP 201 response — often used to confirm a successful POST operation.
+
+To test this without using external tools, you’ll use **Swagger UI**, a built-in API explorer that makes it easy to test endpoints in your browser.
+
+By default, the Minimal API template doesn’t include Swagger. To enable it:
+
+1. Add Swagger services before building the app:
+
+   ```csharp
+   builder.Services.AddEndpointsApiExplorer();
+   builder.Services.AddSwaggerGen();
+   ```
+2. After `Build()`, enable middleware for Swagger:
+
+   ```csharp
+   if (app.Environment.IsDevelopment())
+   {
+       app.UseSwagger();
+       app.UseSwaggerUI();
+   }
+   ```
+
+Once that’s set up, visiting `/swagger` in your browser will show your API, allow you to interact with endpoints, and test `POST` requests easily.
 
 ### Instructions:
 
