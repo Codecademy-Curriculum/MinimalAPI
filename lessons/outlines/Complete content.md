@@ -1120,8 +1120,45 @@ Swagger isn't just a dev tool — it helps with:
 
 Even if you're building a small app alone, clear documentation = fewer bugs and less confusion.
 
-https://minimal-apis.github.io/quickstart/openapi.html#a-brief-introduction-to-openapi
+## Exercise #10: Summary
+
+**Learning Standards**: 
+* N/A
+  
+### Which course outcomes will be covered by this exercise?
+- 
+
+**Learners Will Be Able To**:
+
+* Use `MapPut()` to define a PUT endpoint that updates an existing resource using route parameters and body data
+* Use `MapDelete()` to define a DELETE endpoint that removes a resource using route parameters
+* Return appropriate HTTP status codes such as `200 OK`, `204 No Content`, and `404 Not Found`
+* Demonstrate full CRUD capability by integrating POST, GET, PUT, and DELETE in one app
 
 
+#### Narrative
 
+Great work completing the journey through building APIs with ASP.NET Core Minimal APIs. In this lesson, you built up your knowledge step-by-step — from writing your first endpoint to creating a fully functional and validated API with documentation.
+
+In this lesson, you learned:
+- how to create a new minimal API project using `dotnet new web`
+- how to define your first GET and POST endpoints using `MapGet()` and `MapPost()`
+- how to receive JSON data from the request body using model binding
+- how to handle route parameters (`/api/products/{id}`) for resource identification
+- how to use query string parameters (`/api/products/search?name=notebook`) for filtering
+- how to create and use a C# model class to define your data shape (`Product`)
+- how to build a simple CRUD system using `GET`, `POST`, `PUT`, and `DELETE`
+- how to validate request data using Data Annotations like `[Required]` and `[Range]`
+- how to manually trigger model validation and return structured `400 Bad Request` errors
+- how to enable Swagger/OpenAPI for automatic documentation
+- how to describe endpoints using `.WithSummary()` to enhance documentation
+- how to use Swagger UI to explore, test, and debug all endpoints interactively
+- the importance of meaningful responses with correct HTTP status codes
+- how all these pieces come together to build a functional, documented, and testable API
+
+You went from writing a hard-coded "Hello World" to building a professional-grade API with real-world patterns. This experience prepares you for building real-world web services — with a strong foundation in routing, data modeling, validation, and documentation.
+
+### Instruction
+
+Use the workspace to explore the Product API or experiment with what you’ve learned. Try adding new endpoints, modifying existing ones, or adjusting validation to observe how the API behaves.
 
