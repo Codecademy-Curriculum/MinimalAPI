@@ -15,7 +15,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 3. In ASP.NET Core Minimal APIs, the `MapGet()` method is used to define `GET` endpoints that retrieve data from the API. 
 4. In ASP.NET Core Minimal APIs, route parameters can be captured from the URL using parameter binding and constraints to validate input. 
 5. In ASP.NET Core Minimal APIs, the `MapPost()` method is used to define `POST` endpoints that create new resources in the API.
-6. In ASP.NET Core Minimal APIs, use `MapPost()` method with model binding to accept and process JSON data as C# objects.
+6. In ASP.NET Core Minimal APIs, the `MapPost()` method can be used with model binding to accept and process JSON data as C# objects.
 7. In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies. 
 8. In ASP.NET Core Minimal APIs, the `MapPut()` method is used to define `PUT` endpoints that update existing resources in the API.
 9. In ASP.NET Core Minimal APIs, the `MapDelete()` method is used to define `DELETE` endpoints that remove resources from the API. 
@@ -23,8 +23,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 11. In ASP.NET Core Minimal APIs, error handling can be implemented using exception handling middleware and standardized problem details responses. 
 12. In ASP.NET Core Minimal APIs, OpenAPI documentation can be automatically generated using built-in support for Swagger/OpenAPI specifications.
 
-
-### Lesson Outline
+---
 
 ## Exercise 1
 **Title**: Introduction to Minimal APIs
@@ -41,9 +40,9 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 - Create and run a new minimal API project to see it working
 
 **Checkpoints/Instructions**:
-1. Create a new minimal API project using `dotnet new webapi --minimal`
+1. Create a new minimal API project using `dotnet new web`
 2. Run the application using `dotnet run`
-3. Explore the generated Program.cs file structure
+3. Explore the generated `Program.cs` file structure
 4. Test the default endpoint in a browser
 
 **Notes**:
@@ -129,38 +128,24 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 **Title**: Accepting JSON Using Model Binding
 
 **Learning Standards**: 
-- In ASP.NET Core Minimal APIs, use `MapPost()` method with model binding to accept and process JSON data as C# objects.
+- In ASP.NET Core Minimal APIs, `MapPost()` method can be used with model binding to accept and process JSON data as C# objects.
   
 **Narrative**: 
 - Build on accepting plain text POST requests by handling JSON input.
 - Use model binding to automatically convert JSON data into a C# object.
 - Define a C# class to represent the expected JSON structure with properties like `Id` and `Name`.
-- Send JSON objects in requests to have them deserialized into the model automatically.
-- Simplify input handling by avoiding manual JSON parsing.
 - Test the JSON POST endpoint interactively using Swagger UI.
 
 **Checkpoints**:
 1. Define a C# model class matching expected JSON structure.
 2. Create a POST endpoint that accepts the model as input.
-3. Use Swagger to test sending JSON and receiving structured responses. Return the created object with an HTTP 201 response.
-
+3. Use Swagger to test sending JSON and receiving structured responses.
+   
 **Notes**:
 - Build on the plain text POST endpoint from the previous exercise
 - Focus on JSON model binding as a key concept for structured input
 - Reinforce defining simple C# model classes to match incoming JSON
 - Emphasize testing endpoints interactively using Swagger UI
-
-## Exercise 6
-**Title**: Combining GET and POST — Resource Creation and Retrieval
-
-**Learning Standards**: 
-- In ASP.NET Core Minimal APIs, model binding automatically maps HTTP request data to method parameters using various binding sources like route values, query strings, and request bodies.
-
-  
-**Narrative**: 
--Certainly! Here's the **Narrative** and **Checkpoints** for **Exercise 6: Combining GET and POST — Resource Creation and Retrieval**, following your requested format.
-
----
 
 ## Exercise 6
 
@@ -180,7 +165,7 @@ Create production-ready minimal APIs using .NET 8 with proper project organizati
 
 **Checkpoints**:
 
-* Create a C# `Product` class and an in-memory list to hold data
+* Create a C# class and an in-memory list to hold data
 * Define a `POST` endpoint that accepts JSON and stores new entries
 * Define a `GET` endpoint that retrieves data using route parameter binding
 * Define a `GET` endpoint that filters data using query string binding
