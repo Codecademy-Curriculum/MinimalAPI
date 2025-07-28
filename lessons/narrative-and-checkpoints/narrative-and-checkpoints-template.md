@@ -24,15 +24,19 @@ dotnet new web -o MyApiApp
  ```
 The `-o` option specifies the output folder name. Both approaches produce the same structure, with `Program.cs` at its core. We’ll use the current folder method for simplicity.
 
-**What’s inside Program.cs:**
+**What’s inside `Program.cs`:**
 
-This file drives our API. Key parts include:
+This file drives our API. Here's what the default code looks like: 
+
+![template code](https://github.com/user-attachments/assets/fe5594d9-c658-4c12-8448-f47584fa73c3)
+
+In the above code:
 
 - `CreateBuilder()`: Configures services
 - `MapGet()`: Handles requests (we’ll explore this next)
 - `Run()`: Starts the server
  
-**How to Run the App:**
+**How to Run:**
 
 1.	Navigate to the folder (if needed):`cd MyApiApp`
    
@@ -42,7 +46,7 @@ This file drives our API. Key parts include:
    
 The terminal will display a local URL such as `https://localhost:5001`.
 
-**(gif)**
+<img width="940" height="338" alt="Image" src="https://github.com/user-attachments/assets/9bc45b0c-a281-478d-9676-c5020d724688" />
 
 In most development environments, we would open this URL in a browser to view the API’s response. Here, however, a fixed address: `https://localhost:8000` is already set up for us, as shown in the workspace.
 
