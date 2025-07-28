@@ -46,28 +46,31 @@ In the above code:
    
 The terminal will display a local URL such as `https://localhost:5001`.
 
-<img width="940" height="338" alt="Image" src="https://github.com/user-attachments/assets/9bc45b0c-a281-478d-9676-c5020d724688" />
+<img width="719" height="256" alt="Image" src="https://github.com/user-attachments/assets/c2b0014c-900d-4b9b-8b4b-e447add63a4c" />
 
-In most development environments, we would open this URL in a browser to view the API’s response. Here, however, a fixed address: `https://localhost:8000` is already set up for us, as shown in the workspace.
+In most development environments, we would open this URL in a browser to view the API’s response. 
+
+Here, however, a fixed address: `https://localhost:8000` is already set up for us, as shown in the workspace.
 
 This is all it takes to create a working API with a single response.
 
 
 ### Instructions:
 
-1. Checkpoint: Open the terminal and run a command that creates a new web app inside a folder called `MinimalApiDemo`.
+1. Checkpoint: Open the terminal and run a command that creates a new Minimal API web app inside the current folder.
 
-Hint: Use `dotnet new web -o Name` syntax to create your Minimal API project folder.
+Hint: Use `dotnet new web` syntax to create your Minimal API project.
    
-2. Checkpoint: Open the `Program.cs` file and locate the line that defines the `MapGet()` method. Change the response from "Hello World!" to a custom string of your choice, such as your name or a greeting. 
+2. Checkpoint: Open the `Program.cs` file. Click the **Run** button to see what is printed to the screen. Observe the response in the browser.
 
-Hint: Replace the string inside `() => "Hello World!"` with any other string, like `"Hi from Sarah!"`.
+Hint: You don’t have to change anything in the code editor. After pressing Run button, you should be able to see the following output:
 
-3. Checkpoint: Using the terminal, navigate into the newly created folder and build the project to make sure all files and references are correctly configured. 
+<img width="719" height="250" alt="Image" src="https://github.com/user-attachments/assets/d27b4c1a-c6c1-45e4-8537-8a627c6b827c" />
 
-4. Checkpoint: Run the application using the terminal. After the server starts, look for the HTTPS URL (such as `https://localhost:5001`) printed in the terminal — this is your API’s base address. Open this URL in the browser. You should see the custom message that you added within `MapGet()` method.
 
-Hint: Always use the full URL shown in the terminal — especially the HTTPS one.
+3. Checkpoint: In the `Program.cs` file, find the line that defines the `MapGet()` method. Change the response from "Hello World!" to a custom string of your choice, such as your name or a greeting.
+
+Hint: Replace the string inside `() => "Hello World!"` with any other string, like `"Hi from Sarah!"`. 
 
 
 ## Exercise 2: Basic GET Endpoints 
