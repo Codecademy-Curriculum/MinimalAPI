@@ -78,7 +78,7 @@ Hint: Replace the string inside `() => "Hello World!"` with any other string, li
 ### Narrative:
 In the previous exercise, we created and ran your first ASP.NET Core Minimal API project. Now, let’s take a closer look at the default code inside `Program.cs`.
 
-One line we might have noticed is:
+One line we had noticed is:
 
 ```cs
 app.MapGet("/", () => "Hello World!");
@@ -158,9 +158,11 @@ Hint: Return an anonymous object like `new { name = "...", version = "..." }`.
 
 ### Narrative:
 
-So far, your API returned the same fixed message every time — like `“Hello World”` or the current time. But most real-world APIs need to respond based on what the user asks for. For example, if someone wants to see a product by ID or view a user profile by name, the API must react to different inputs. That’s where route parameters are used.
+So far, our API returned the same fixed message every time — like `“Hello World”` or the current time. But think about a real website or app. It needs to do more than just say the same thing all the time. For example, imagine a website where users can look up information about different people or products.
 
-A route parameter is a part of the URL that acts like a placeholder for values. For example:
+If someone wants to see their profile page, the website needs to know which user to show. Or if they want to see details about a specific product, the app must know which product they mean. This means the API has to understand and respond differently depending on what the user asks for. That’s where **route parameters** are used.
+
+A route parameter is a part of the web address (URL) that acts like a placeholder for values. For example:
 
 ```cs
 app.MapGet("/greet/{name}", (string name) => $"Hello, {name}!");
@@ -174,36 +176,41 @@ Route parameters can also be limited by constraints. A constraint ensures the va
 app.MapGet("/api/items/{id:int}", (int id) => $"Item ID is: {id}");
 ```
 
-This only works if the id is a number. If you try a word like `/api/items/apple`, it won’t match and the browser will show a **404 Not Found** error. That’s helpful — it stops invalid data from reaching your code.
+This only works if the `id` is a number such as `/api/items/42`. Visiting `/api/items/apple` won’t work — the server returns a **404 Not Found**. This helps prevent invalid data from reaching our code.
 
-You can also use route parameters to return more useful responses. For example, return a message that includes a person’s name, or send back a custom JSON object.
+By using route parameters, we can create APIs that return personalized messages or custom JSON based on user input.
 
-By learning route parameters, you can start building smarter APIs that respond based on what users ask for.
+Learning route parameters is an important step toward building smarter, more flexible APIs that respond meaningfully to different requests.
 
 ### Instructions:
 
-1. Checkpoint: Create a GET endpoint that accepts any ID from the URL
+1. Checkpoint: **Favorite Color Message**
    
-Add a new route to capture an `id` value directly from the URL using a route parameter. Use the captured value to return a message like: `"You requested item with ID: 123"`.
+- Create a GET endpoint at `/color/{favoriteColor}` that returns a message like: `"Your favorite color is {favoriteColor}!"`
+- Test it by visiting `/color/blue` or `/color/green`.
 
-Hint: Use a pattern like `"/api/items/{id}"` and bind id as a string.
+Hint: Use a string route parameter to capture the color and return it in the response.
 
-2. Checkpoint: Restrict a route to accept only integer IDs
+2. Checkpoint: **Order Status Checker**
 
-Define another route that includes the `:int` constraint in the path.
-- The endpoint should return a message like: `"Item ID as integer: 42"`.
-- Try entering a word like `/hello` in place of the number — it should return a **404** page.
+- Create a GET endpoint at `/order/{orderNumber:int}` that returns a message like: `"Order number {orderNumber} is being processed."`
+- Test by visiting `/order/1234`. Non-numeric order numbers should return a 404 error.
+
+Hint: Add `:int` after `{orderNumber}` to only allow numbers.
+
+3. Checkpoint: **Book Details JSON**
+
+Create a GET endpoint at `/book/{isbn}` that returns a JSON object with:
+
+- `isbn`: the ISBN string from the route
+- `title`: a fixed title, for example "API Basics"
+- `available`: true
+
+Test by visiting `/book/9781234567890` and check the JSON response.
   
-Hint: Add `:int` after `{id}` to only allow numbers.
+Hint: Return an anonymous object using syntax like: 
 
-3. Checkpoint: Return a JSON object using a username from the route
-   
-Create an endpoint that captures a username value and returns a simple object with a message like:
-```json
-{ "message": "Profile for user: alex" }
-```
-  
-Hint: Return a result using `new { message = ... }`.
+`new { isbn = ..., title = ..., available = ... }`
 
 ## Exercise 4: Creating a Simple POST Endpoint
 
