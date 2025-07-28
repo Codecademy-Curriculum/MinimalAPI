@@ -217,52 +217,100 @@ Hint: Return an anonymous object using syntax like:
 
 ### Narrative:
 
-In earlier exercises, you used `MapGet()` to return responses. Now, you’ll use `MapPost()` to **accept** data from the client — such as form submissions or resource creation.
+Imagine a travel website where users can submit feedback after a trip. We want to build an endpoint where users can send a message like “Great service!” and responds with a confirmation.
 
-The **POST** method is designed for sending data to the server. For example, imagine submitting a feedback form or creating a new record. Minimal APIs make this easy using `MapPost()`.
+To handle this kind of data submission, we use the **POST** method — which is designed to send data to the server, unlike GET which only retrieves it. Minimal APIs support this through the `MapPost()` method.
 
-Here’s a basic example:
+You can define a POST endpoint using `MapPost()` like this:
 
-```csharp
-app.MapPost("/api/message", (string body) =>
+```cs
+app.MapPost("/feedback", (string body) =>
 {
-    return Results.Created("/api/message", $"You sent: {body}");
+    return Results.Created("/feedback", $"Feedback received: {body}");
 });
 ```
+Let’s break it down:
 
-This defines a POST endpoint at `/api/message`, reads plain text from the request body, and returns a `201 Created` response with a confirmation message. `Results.Created()` is a helper that generates a proper HTTP 201 response — often used to confirm a successful POST operation.
+- The endpoint listens at `/feedback`.
+- It accepts plain text from the request body (captured in body).
+- It returns a **201 Created** response using `Results.Created()` — which indicates success and includes a message back to the user.
+  
+To test this, we’ll use Swagger UI, a built-in tool that that displays our API and lets us interact with endpoints.
 
-To test this without using external tools, you’ll use **Swagger UI**, a built-in API explorer that makes it easy to test endpoints in your browser.
+Since the dotnet new web template doesn’t come with Swagger enabled, we need to configure it manually:
+ 
+**Step 1. Install Swagger using the terminal:**
 
-By default, the Minimal API template doesn’t include Swagger. To enable it:
+```bash
+dotnet add package Swashbuckle.AspNetCore
+```
 
-1. Add Swagger services before building the app:
+**2. Enable Swagger services before `Build()`:**
 
-   ```csharp
-   builder.Services.AddEndpointsApiExplorer();
-   builder.Services.AddSwaggerGen();
-   ```
-2. After `Build()`, enable middleware for Swagger:
+```cs
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+```
 
-   ```csharp
-   if (app.Environment.IsDevelopment())
-   {
-       app.UseSwagger();
-       app.UseSwaggerUI();
-   }
-   ```
+**3. Add Swagger middleware after `Build()`:**
 
-Once that’s set up, visiting `/swagger` in your browser will show your API, allow you to interact with endpoints, and test `POST` requests easily.
+```cs
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+```
+
+Once this setup is complete, running the app and visiting `https://localhost:8000/swagger` (or port specified on your local machine) will show the Swagger UI where we can test GET and POST endpoints directly in the browser.
+
+It looks something like this:
+
+<img width="628" height="371" alt="image" src="https://github.com/user-attachments/assets/b5c93048-f6e9-4cf6-a56e-10b61d115117" />
+
+
+In this UI, we can see a list of all the endpoints defined in the application. To test any endpoint — for example, the `GET /` endpoint — we can click on it to expand details, then click **"Try it out"** and **"Execute"** to send a real request to the API.
+
+<img width="609" height="785" alt="image" src="https://github.com/user-attachments/assets/3fcfd7dd-ab87-4867-8cd1-864b8d7e8031" />
+
+
+Similarly, to try out a POST endpoint like `/feedback`, click **Try it out**, enter a message, and hit **Execute**. The response appears just below — including the **Status Code** (`201 Created`) and the **Response body** showing your confirmation message.
+
+<img width="597" height="746" alt="image" src="https://github.com/user-attachments/assets/70b93055-d38f-4676-bdf2-8fbfef70193c" />
+
+
+This makes it easy to confirm whether our POST endpoint behaves as expected — without needing a separate API client like Postman.
+
 
 ### Instructions:
 
-1. Checkpoint: _Insert checkpoint text here._
+1. Checkpoint: **Enable Swagger UI in the project**
 
-Hint: _Insert optional but """"" recommended hint text here._
+Swagger is already installed in this environment. You need to:
 
-2. Checkpoint: _Insert checkpoint text here._
+- Add Swagger services before `Build()`, and Swagger middleware after it.
+- Click the **Run** button and open `https://localhost:8000/swagger` in the browser.
 
-Hint: _Insert optional but recommended hint text here._
+For now, you can only see the default GET endpoint.
+
+Hint: Use `AddEndpointsApiExplorer()` and `AddSwaggerGen()` before `Build()`; add `UseSwagger()` and `UseSwaggerUI()` after `Build()`. 
+
+2. Checkpoint: **Create a POST endpoint for support tickets**
+
+- Define a new POST route at `/api/support` that accept plain text input from the request body.
+- Return a message such as:
+  
+`"Support request received: <your message>"`
+  
+Hint:  Use `MapPost()` with a string parameter and return `Results.Created()`.
+
+3. Checkpoint: **Test the `/api/support` POST endpoint using Swagger**
+
+- Use Swagger UI to send a test message to your `/api/support` POST endpoint.
+- Confirm that the response returns `201 Created` with your input message.
+
+Hint: In Swagger UI, click **Try it out** next to `/api/support`, enter a sample message like `"My app keeps crashing on login."`, and hit **Execute** to see the response.
+
 
 ## Exercise 3: _Insert exercise title here._
 
