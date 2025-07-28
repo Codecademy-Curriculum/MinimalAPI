@@ -4,50 +4,47 @@
 
 ### Narrative:
 
-Let’s say you want to build a small app — maybe to track tasks or record expenses — and you want to start quickly, without setting up controllers, models, or lots of configuration files. This is where Minimal APIs in ASP.NET Core come in.
+Let’s say we want to build a small app — like a task tracker or expense logger — and get started quickly, without setting up controllers, models, or configuration files. This is where **Minimal APIs** in ASP.NET Core come in.
+Minimal APIs offer a fast, lightweight way to build HTTP APIs using just a single file —typically `Program.cs`. Unlike traditional ASP.NET Core apps, they require less setup and are great for simple, focused applications.
 
-Minimal APIs in ASP.NET Core offer a fast, lightweight way to build HTTP APIs using just a single file—typically Program.cs. Unlike traditional ASP.NET Core apps that use controllers and models, Minimal APIs let you define routes and responses with minimal setup.
-
-Why use Minimal APIs?
-- Less boilerplate
-- Faster startup
-- Great for microservices or small APIs
+**Why use Minimal APIs?**
 - Beginner-friendly
+- Faster startup
+- Ideal for small apps or microservices
 
-**Tools You’ll Use**
+**How to Create:**
 
-Throughout course, we’ll use the .NET CLI inside Visual Studio Code (VS Code) to stay focused on the essentials. If you'd like to compare how to do this in Visual Studio, you can refer to the official documentation:
+To create a project in the current folder, we use
+```cs
+dotnet new web
+ ```
+Or, to create one in a new folder, we can use:
+```cs
+dotnet new web -o MyApiApp
+ ```
+The `-o` option specifies the output folder name. Both approaches produce the same structure, with `Program.cs` at its core. We’ll use the current folder method for simplicity.
 
-[Create a Minimal API with Visual Studio](https://learn.microsoft.com/en-us/aspnet/core/tutorials/min-web-api?view=aspnetcore-8.0&tabs=visual-studio)
+**What’s inside Program.cs:**
 
-To begin, you’ll use the command `dotnet new web -o Name` to create a new minimal API project. Here, `Name` is your desired project name.
+This file drives our API. Key parts include:
 
-This will generate a ready-to-run API inside a folder. Once that’s created, you’ll use three CLI commands to work with it:
+- `CreateBuilder()`: Configures services
+- `MapGet()`: Handles requests (we’ll explore this next)
+- `Run()`: Starts the server
+ 
+**How to Run the App:**
 
-- `cd` command to navigate to your project folder
-- `dotnet build` compiles your project and checks for any errors.
-- `dotnet run` launches a local web server.
-
-You then copy the URL shown in the terminal (like `https://localhost:5001`) and paste it in your browser to view the API response.
+1.	Navigate to the folder (if needed):`cd MyApiApp`
+   
+2.	Build: `dotnet build`
+   
+3.	Start the server: `dotnet run`
+   
+The terminal will display a local URL such as `https://localhost:5001`.
 
 **(gif)**
 
-Here's what the default code in Program.cs looks like:
-
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
-
-app.MapGet("/", () => "Hello World!");
-
-app.Run();
-```
-
-In the above code:
-
-- `CreateBuilder()` sets up the app’s configuration and services.
-- `MapGet()` defines a GET endpoint at the root path (`/`). We shall learn more about this in the next exercise.
-- `Run()` starts the web server and begins listening for requests.
+In most development environments, we would open this URL in a browser to view the API’s response. Here, however, a fixed address: `https://localhost:8000` is already set up for us, as shown in the workspace.
 
 This is all it takes to create a working API with a single response.
 
