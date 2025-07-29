@@ -266,17 +266,16 @@ Once this setup is complete, running the app and visiting `https://localhost:800
 
 It looks something like this:
 
-<img width="628" height="371" alt="image" src="https://github.com/user-attachments/assets/b5c93048-f6e9-4cf6-a56e-10b61d115117" />
-
+<img width="628" height="371" alt="image" src="https://github.com/user-attachments/assets/c8667a57-30aa-46e8-b1c0-f236d41182f8" />
 
 In this UI, we can see a list of all the endpoints defined in the application. To test any endpoint — for example, the `GET /` endpoint — we can click on it to expand details, then click **"Try it out"** and **"Execute"** to send a real request to the API.
 
-<img width="609" height="785" alt="image" src="https://github.com/user-attachments/assets/3fcfd7dd-ab87-4867-8cd1-864b8d7e8031" />
+<img width="551" height="715" alt="Picture1" src="https://github.com/user-attachments/assets/6a1f972d-dad6-41e4-bd2e-452027621f1b" />
 
 
 Similarly, to try out a POST endpoint like `/feedback`, click **Try it out**, enter a message, and hit **Execute**. The response appears just below — including the **Status Code** (`201 Created`) and the **Response body** showing your confirmation message.
 
-<img width="597" height="746" alt="image" src="https://github.com/user-attachments/assets/70b93055-d38f-4676-bdf2-8fbfef70193c" />
+<img width="597" height="746" alt="Picture2" src="https://github.com/user-attachments/assets/dff3fe41-3f4b-422a-b20b-4432f9e1c8fb" />
 
 
 This makes it easy to confirm whether our POST endpoint behaves as expected — without needing a separate API client like Postman.
