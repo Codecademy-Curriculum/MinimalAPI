@@ -5,10 +5,12 @@
 ### Narrative:
 
 Let’s say we want to build a small app — like a task tracker or expense logger — and get started quickly, without setting up controllers, models, or configuration files. This is where **Minimal APIs** in ASP.NET Core come in.
+
 Minimal APIs offer a fast, lightweight way to build HTTP APIs using just a single file —typically `Program.cs`. Unlike traditional ASP.NET Core apps, they require less setup and are great for simple, focused applications.
 
 **Why use Minimal APIs?**
 - Beginner-friendly
+- Less boilerplate
 - Faster startup
 - Ideal for small apps or microservices
 
@@ -44,7 +46,7 @@ In the above code:
    
 3.	Start the server: `dotnet run`
    
-The terminal will display a local URL such as `https://localhost:5001`.
+The terminal will display a local URL such as `https://localhost:5074`.
 
 <img width="719" height="256" alt="Image" src="https://github.com/user-attachments/assets/c2b0014c-900d-4b9b-8b4b-e447add63a4c" />
 
@@ -63,7 +65,7 @@ Hint: Use `dotnet new web` syntax to create your Minimal API project.
    
 2. Checkpoint: Open the `Program.cs` file. Click the **Run** button to see what is printed to the screen. Observe the response in the browser.
 
-Hint: You don’t have to change anything in the code editor. After pressing Run button, you should be able to see the following output:
+Hint: You don’t have to change anything in the code editor. After pressing the Run button, you should be able to see the following output:
 
 <img width="719" height="250" alt="Image" src="https://github.com/user-attachments/assets/d27b4c1a-c6c1-45e4-8537-8a627c6b827c" />
 
@@ -78,7 +80,7 @@ Hint: Replace the string inside `() => "Hello World!"` with any other string, li
 ### Narrative:
 In the previous exercise, we created and ran your first ASP.NET Core Minimal API project. Now, let’s take a closer look at the default code inside `Program.cs`.
 
-One line we had noticed is:
+One line we noticed is:
 
 ```cs
 app.MapGet("/", () => "Hello World!");
@@ -100,7 +102,7 @@ app.MapGet("/", () => "Hello World!");
 
 means:
 
-"*When someone visits the root URL (i.e., /), send back the text: 'Hello World!'.*"
+"*When someone visits the root URL (i.e., `/`), send back the text: 'Hello World!'.*"
 
 **What does `MapGet()` do?**
 
@@ -154,6 +156,19 @@ Hint: Return `DateTime.UtcNow` inside the lambda expression.
 
 Hint: Return an anonymous object like `new { name = "...", version = "..." }`.
 
+**Solution:**
+
+```cs
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.MapGet("/hello", () => "Hello from /hello endpoint");
+app.MapGet("/time", () => DateTime.UtcNow);
+app.MapGet("/info", () => new { name = "Minimal API", version = "1.0.0" });
+
+app.Run();
+```
+
 ## Exercise 3: Working with Route Parameters
 
 ### Narrative:
@@ -186,17 +201,17 @@ Learning route parameters is an important step toward building smarter, more fle
 
 1. Checkpoint: **Favorite Color Message**
    
-- Create a GET endpoint at `/color/{favoriteColor}` that returns a message like: `"Your favorite color is {favoriteColor}!"`
+- Create a GET endpoint at `/color/{favorite_color}` that returns a message like: `"Your favorite color is {favorite_color}!"`
 - Test it by visiting `/color/blue` or `/color/green`.
 
 Hint: Use a string route parameter to capture the color and return it in the response.
 
 2. Checkpoint: **Order Status Checker**
 
-- Create a GET endpoint at `/order/{orderNumber:int}` that returns a message like: `"Order number {orderNumber} is being processed."`
+- Create a GET endpoint at `/order/{order_number:int}` that returns a message like: `"Order number {order_number} is being processed."`
 - Test by visiting `/order/1234`. Non-numeric order numbers should return a 404 error.
 
-Hint: Add `:int` after `{orderNumber}` to only allow numbers.
+Hint: Add `:int` after `{order_number}` to only allow numbers.
 
 3. Checkpoint: **Book Details JSON**
 
@@ -212,8 +227,22 @@ Hint: Return an anonymous object using syntax like:
 
 `new { isbn = ..., title = ..., available = ... }`
 
-## Exercise 4: Creating a Simple POST Endpoint
+**Solution:**
 
+```cs
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.MapGet("/color/{favorite_color}", (string favorite_color) => $"Your favorite color is {favorite_color}!");
+
+app.MapGet("/order/{order_number:int}", (int order_number) => $"Order number {order_number} is being processed.");
+
+app.MapGet("/book/{isbn}", (string isbn) => new { isbn = isbn, title = "API Basics", available = true });
+
+app.Run();
+```
+
+## Exercise 4: Creating a Simple POST Endpoint
 
 ### Narrative:
 
@@ -232,12 +261,12 @@ app.MapPost("/feedback", (string body) =>
 Let’s break it down:
 
 - The endpoint listens at `/feedback`.
-- It accepts plain text from the request body (captured in body).
+- It accepts plain text from the request body (captured in `body`).
 - It returns a **201 Created** response using `Results.Created()` — which indicates success and includes a message back to the user.
   
-To test this, we’ll use Swagger UI, a built-in tool that that displays our API and lets us interact with endpoints.
+To test this, we’ll use **Swagger UI**, a built-in tool that that displays our API and lets us interact with endpoints.
 
-Since the dotnet new web template doesn’t come with Swagger enabled, we need to configure it manually:
+Since the `dotnet new web` template doesn’t come with Swagger enabled, we need to configure it manually:
  
 **Step 1. Install Swagger using the terminal:**
 
@@ -245,14 +274,15 @@ Since the dotnet new web template doesn’t come with Swagger enabled, we need t
 dotnet add package Swashbuckle.AspNetCore
 ```
 
-**2. Enable Swagger services before `Build()`:**
+**Step 2. Enable Swagger services before ` var app = builder.Build()`:**
 
 ```cs
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 ```
 
-**3. Add Swagger middleware after `Build()`:**
+**Step 33. Add Swagger middleware after `var app = builder.Build()`:**
 
 ```cs
 if (app.Environment.IsDevelopment())
@@ -270,7 +300,7 @@ It looks something like this:
 
 In this UI, we can see a list of all the endpoints defined in the application. To test any endpoint — for example, the `GET /` endpoint — we can click on it to expand details, then click **"Try it out"** and **"Execute"** to send a real request to the API.
 
-<img width="551" height="715" alt="Picture1" src="https://github.com/user-attachments/assets/6a1f972d-dad6-41e4-bd2e-452027621f1b" />
+<img width="551" height="715" alt="Picture3" src="https://github.com/user-attachments/assets/de0bd2ba-4a50-4a04-8cb0-3919d0ea1975" />
 
 
 Similarly, to try out a POST endpoint like `/feedback`, click **Try it out**, enter a message, and hit **Execute**. The response appears just below — including the **Status Code** (`201 Created`) and the **Response body** showing your confirmation message.
@@ -287,7 +317,7 @@ This makes it easy to confirm whether our POST endpoint behaves as expected — 
 
 Swagger is already installed in this environment. You need to:
 
-- Add Swagger services before `Build()`, and Swagger middleware after it.
+- Add Swagger services before `var app = builder.Build()`, and Swagger middleware after it.
 - Click the **Run** button and open `https://localhost:8000/swagger` in the browser.
 
 For now, you can only see the default GET endpoint.
@@ -310,6 +340,30 @@ Hint:  Use `MapPost()` with a string parameter and return `Results.Created()`.
 
 Hint: In Swagger UI, click **Try it out** next to `/api/support`, enter a sample message like `"My app keeps crashing on login."`, and hit **Execute** to see the response.
 
+**Solution:**
+
+```cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Enable Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Use Swagger middleware
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapGet("/", () => "Hello World!");
+
+app.MapPost("/api/support", (string body) =>
+{
+    return Results.Created("/api/support", $"Support request received:{body}");
+});
+
+app.Run();
+```
 
 ## Exercise 5: Accepting JSON Using Model Binding
 
@@ -352,7 +406,7 @@ app.MapPost("/api/products", (Item new_item) =>
 Here’s what’s happening:
 
 - `MapPost()` defines the route `/api/products` for POST requests.
-- The Item `new_item` parameter tells ASP.NET to expect JSON, and it binds the JSON data to the Item object.
+- The Item `new_item` parameter tells ASP.NET to expect JSON, and it binds the JSON data to the `Item` object.
 - `Results.Created()` sends a **201 Created** response, along with the submitted object.
 
 To test this, go to `https://localhost:8000/swagger` in your browser. Swagger UI will list the endpoint. Click **Try it out**, paste your JSON, and click **Execute**.
@@ -362,8 +416,9 @@ We’ll see:
 - **Status Code:** 201 Created
 - **Response Body:** Your submitted data.
 
-(image)
+<img width="551" height="715" alt="Picture4" src="https://github.com/user-attachments/assets/3b87a70d-2375-4cd1-969f-d8b7d333a15f" />
 
+<br/>
 We can see the object echoed back in the response — a clear sign that model binding worked.
 
 ### Instructions:
@@ -375,35 +430,17 @@ We can see the object echoed back in the response — a clear sign that model bi
 
 Hint: Create a class just like the `Item` class shown earlier. Remember, class names start with uppercase and the property names must match the JSON field names.
 
-**Solution:**
-
-```cs
-public class MovieDetails
-{
-    public string Title { get; set; }
-    public int Year { get; set; }
-}
-```
 
 2. Checkpoint: **Add a new POST endpoint at `/api/movies`**
 
-- Accept a Movie object from the request body.
+- Accept a `MovieDetails` object from the request body.
 - Return the object along with a `201 Created` response.
 
-Hint: Use `app.MapPost()` with the route `/api/movie`s. Let ASP.NET bind the `MovieDetails` parameter. Use `Results.Created()` to return the submitted data and include a location URL.
-
-**Solution:**
-
-```cs
-app.MapPost("/api/movies", (MovieDetails new_movie) =>
-{
-    return Results.Created($"/api/movies/{new_movie.Year}", new_movie);
-});
-```
+Hint: Use `app.MapPost()` with the route `/api/movies`. Use `Results.Created()` to return the submitted data.
 
 3. Checkpoint: **Test the Endpoint Using Swagger**
 
-- In Swagger UI, locate the POST /api/movies endpoint.
+- In Swagger UI, locate the POST `/api/movies` endpoint.
 - Click **Try it out** and submit the following JSON:
 
 ```json
@@ -431,22 +468,30 @@ You should see:
 **Solution:**
 
 ```cs
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.MapPost("/api/movies", (MovieDetails new_movie) =>
 {
     return Results.Created($"/api/movies/{new_movie.Year}", new_movie);
 });
+
+app.Run();
+
+public class MovieDetails
+{
+    public string Title { get; set; }
+    public int Year { get; set; }
+}
 ```
 
-## Exercise 3: _Insert exercise title here._
-
-### Narrative:
-
-### Instructions:
-
-1. Checkpoint: _Insert checkpoint text here._
-
-Hint: _Insert optional but """"" recommended hint text here._
-
-2. Checkpoint: _Insert checkpoint text here._
-
-Hint: _Insert optional but recommended hint text here._
