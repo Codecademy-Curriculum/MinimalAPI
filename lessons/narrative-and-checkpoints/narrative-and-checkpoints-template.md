@@ -418,7 +418,7 @@ We’ll see:
 
 <img width="551" height="715" alt="Picture4" src="https://github.com/user-attachments/assets/3b87a70d-2375-4cd1-969f-d8b7d333a15f" />
 
-<br/>
+
 We can see the object echoed back in the response — a clear sign that model binding worked.
 
 ### Instructions:
