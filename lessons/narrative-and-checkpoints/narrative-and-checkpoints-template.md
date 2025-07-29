@@ -311,19 +311,131 @@ Hint:  Use `MapPost()` with a string parameter and return `Results.Created()`.
 Hint: In Swagger UI, click **Try it out** next to `/api/support`, enter a sample message like `"My app keeps crashing on login."`, and hit **Execute** to see the response.
 
 
-## Exercise 3: _Insert exercise title here._
+## Exercise 5: Accepting JSON Using Model Binding
 
 ### Narrative:
 
+In the previous Exercise, you created a basic `POST` endpoint that accepted **plain text**. That was a great first step toward understanding how clients send data to a server.
+
+But in real-world applications, data is usually sent in a structured format like **JSON**. Imagine building an e-commerce app where customers can add new products. Each product has a name and a price or ID. When a user submits a form, the data gets sent to your API — not as plain text, but as a structured format like JSON.
+
+Instead of extracting fields manually, ASP.NET Core’s model binding allows us to convert the incoming JSON directly into a C# object. This makes your code cleaner and safer.
+
+Let’s say the client sends this JSON:
+
+```json
+{
+  "id": 1,
+  "name": "Notebook"
+}
+```
+
+We’ll first create a class in C# that matches this structure:
+
+```cs
+public class Item
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+```
+
+Now, we define a POST endpoint that uses this class:
+
+```cs
+app.MapPost("/api/products", (Item new_item) =>
+{
+    return Results.Created($"/api/products/{new_item.Id}", new_item);
+});
+```
+
+Here’s what’s happening:
+
+- `MapPost()` defines the route `/api/products` for POST requests.
+- The Item `new_item` parameter tells ASP.NET to expect JSON, and it binds the JSON data to the Item object.
+- `Results.Created()` sends a **201 Created** response, along with the submitted object.
+
+To test this, go to `https://localhost:8000/swagger` in your browser. Swagger UI will list the endpoint. Click **Try it out**, paste your JSON, and click **Execute**.
+
+We’ll see: 
+
+- **Status Code:** 201 Created
+- **Response Body:** Your submitted data.
+
+(image)
+
+We can see the object echoed back in the response — a clear sign that model binding worked.
+
 ### Instructions:
 
-1. Checkpoint: _Insert checkpoint text here._
+1. Checkpoint: **Define a Data Class for Movie Info**
 
-Hint: _Insert optional but """"" recommended hint text here._
+- Create a class named `MovieDetails` with properties `Title` (string) and `Year` (int).
+- Place it below the `app.Run()` line in your `Program.cs`.
 
-2. Checkpoint: _Insert checkpoint text here._
+Hint: Create a class just like the `Item` class shown earlier. Remember, class names start with uppercase and the property names must match the JSON field names.
 
-Hint: _Insert optional but recommended hint text here._
+**Solution:**
+
+```cs
+public class MovieDetails
+{
+    public string Title { get; set; }
+    public int Year { get; set; }
+}
+```
+
+2. Checkpoint: **Add a new POST endpoint at `/api/movies`**
+
+- Accept a Movie object from the request body.
+- Return the object along with a `201 Created` response.
+
+Hint: Use `app.MapPost()` with the route `/api/movie`s. Let ASP.NET bind the `MovieDetails` parameter. Use `Results.Created()` to return the submitted data and include a location URL.
+
+**Solution:**
+
+```cs
+app.MapPost("/api/movies", (MovieDetails new_movie) =>
+{
+    return Results.Created($"/api/movies/{new_movie.Year}", new_movie);
+});
+```
+
+3. Checkpoint: **Test the Endpoint Using Swagger**
+
+- In Swagger UI, locate the POST /api/movies endpoint.
+- Click **Try it out** and submit the following JSON:
+
+```json
+{
+  "title": "Inception",
+  "year": 2010
+}
+```
+
+Hint: In Swagger, each endpoint is listed with its method and path. Look for the POST `/api/movies` entry. Click **Try it out**, paste the JSON into the body box, and click **Execute**.
+
+You should see:
+
+- **Status:** 201 Created
+- **Response Body:**
+
+```json
+{
+  "title": "Inception",
+  "year": 2010
+}
+```
+
+
+**Solution:**
+
+```cs
+app.MapPost("/api/movies", (MovieDetails new_movie) =>
+{
+    return Results.Created($"/api/movies/{new_movie.Year}", new_movie);
+});
+```
 
 ## Exercise 3: _Insert exercise title here._
 
