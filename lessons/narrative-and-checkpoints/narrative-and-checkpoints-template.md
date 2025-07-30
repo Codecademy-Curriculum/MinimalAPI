@@ -495,3 +495,160 @@ public class MovieDetails
 }
 ```
 
+## Exercise 6: Combining GET and POST — Resource Creation and Retrieval
+
+### Narrative:
+
+In the last exercises, we learned how to:
+* Use GET to return fixed responses
+* Use POST to receive plain text or JSON data
+
+Now we will build a tiny product API that lets us:
+* Add a new product using POST
+* Fetch a product by ID using a route parameter
+* Search products by name using a query string
+
+This simulates how real APIs work. For example:
+
+* A shopping app lets you **create** a product (POST)
+* Then lets others **retrieve** it (GET)
+
+We will store the products in a simple **in-memory list**, which is like a temporary database that resets every time you restart the app.
+
+First, we define a class to represent this data. After `app.Run()`, we add:
+
+```cs
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+```
+
+Next, we set up a temporary in-memory list to store products right after `var app = builder.Build();`:
+
+```cs
+var products_list = new List<Product>();
+```
+
+Now we create a POST endpoint to add a product:
+
+```cs
+app.MapPost("/api/products", (Product p) =>
+{
+    products_list.Add(p);
+    return Results.Created($"/api/products/{p.Id}", p);
+});
+```
+
+This endpoint:
+* Accepts a JSON Product (`p`) from the client  
+* Adds it to the list (`products_list`)
+* Returns the product with a **201 Created** status
+
+We also add a GET endpoint to retrieve a product by ID:
+
+```cs
+app.MapGet("/api/products/{id}", (int id) =>
+{
+    foreach (var item in products_list)
+    {
+        if (item.Id == id)
+        {
+            return Results.Ok(item);
+        }
+    }
+    return Results.NotFound();
+});
+```
+
+This:
+* Matches the `{id}` from the URL (e.g., `/api/products/2`)
+* Searches the list `products_list`
+* Returns the product or a `404` if not found
+       
+This shows route value binding in action: `{id}` in the URL is passed to the `(int id)` parameter.
+
+When we run the app and open Swagger, we’ll see the `/api/products` endpoint. Testing it with a JSON body like:
+
+```json
+{ "id": 1, "name": "Notebook", "price": 129.99 }
+```
+
+creates a product. Then, fetching `/api/products/1` returns that product. This covers both model binding from JSON (POST) and route binding using a path value (GET).
+
+''''pending
+### Instructions:
+
+1. Checkpoint: **Define a Data Class for Movie Info**
+
+- Create a class named `MovieDetails` with properties `Title` (string) and `Year` (int).
+- Place it below the `app.Run()` line in your `Program.cs`.
+
+Hint: Create a class just like the `Item` class shown earlier. Remember, class names start with uppercase and the property names must match the JSON field names.
+
+
+2. Checkpoint: **Add a new POST endpoint at `/api/movies`**
+
+- Accept a `MovieDetails` object from the request body.
+- Return the object along with a `201 Created` response.
+
+Hint: Use `app.MapPost()` with the route `/api/movies`. Use `Results.Created()` to return the submitted data.
+
+3. Checkpoint: **Test the Endpoint Using Swagger**
+
+- In Swagger UI, locate the POST `/api/movies` endpoint.
+- Click **Try it out** and submit the following JSON:
+
+```json
+{
+  "title": "Inception",
+  "year": 2010
+}
+```
+
+Hint: In Swagger, each endpoint is listed with its method and path. Look for the POST `/api/movies` entry. Click **Try it out**, paste the JSON into the body box, and click **Execute**.
+
+You should see:
+
+- **Status:** 201 Created
+- **Response Body:**
+
+```json
+{
+  "title": "Inception",
+  "year": 2010
+}
+```
+
+
+**Solution:**
+
+```cs
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapPost("/api/movies", (MovieDetails new_movie) =>
+{
+    return Results.Created($"/api/movies/{new_movie.Year}", new_movie);
+});
+
+app.Run();
+
+public class MovieDetails
+{
+    public string Title { get; set; }
+    public int Year { get; set; }
+}
+```
