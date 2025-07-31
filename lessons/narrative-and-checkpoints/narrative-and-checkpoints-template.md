@@ -380,7 +380,8 @@ Let’s say the client sends this JSON:
 ```json
 {
   "id": 1,
-  "name": "Notebook"
+  "name": "Notebook",
+  "price": 20.01
 }
 ```
 
@@ -391,6 +392,7 @@ public class Item
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public decimal Price { get; set; }
 }
 ```
 
@@ -517,7 +519,7 @@ We will store the products in a simple **in-memory list**, which is like a tempo
 First, we define a class to represent this data. After `app.Run()`, we add:
 
 ```cs
-public class Product
+public class Item
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -525,19 +527,23 @@ public class Product
 }
 ```
 
-Next, we set up a temporary in-memory list to store products right after `var app = builder.Build();`:
+Next, we define and initialize a temporary in-memory list to store products right after `var app = builder.Build();`:
 
 ```cs
-var products_list = new List<Product>();
+var products_list = new List<Item>
+{
+    new Item { Id = 1, Name = "Laptop", Price = 999.99m },
+    new Item { Id = 2, Name = "Mouse", Price = 25.5m }
+};
 ```
 
 Now we create a POST endpoint to add a product:
 
 ```cs
-app.MapPost("/api/products", (Product p) =>
+app.MapPost("/api/products", (Item new_item) =>
 {
-    products_list.Add(p);
-    return Results.Created($"/api/products/{p.Id}", p);
+    products_list.Add(new_item);
+    return Results.Created($"/api/products/{new_item.Id}", new_item);
 });
 ```
 
@@ -569,7 +575,7 @@ This:
        
 This shows route value binding in action: `{id}` in the URL is passed to the `(int id)` parameter.
 
-When we run the app and open Swagger, we’ll see the `/api/products` endpoint. Testing it with a JSON body like:
+When we run the app and open Swagger, we’ll see the GET `/api/products` endpoint. Testing it with a JSON body like:
 
 ```json
 { "id": 1, "name": "Shoes", "price": 150.99 }
@@ -587,14 +593,14 @@ creates a product. Then, fetching `/api/products/1` returns that product. This c
     - `Title` (string)
     - `Author` (string)
 
-Hint: Define the class just like the Product class in the narrative. Use { get; set; } for each property.
+Hint: Define the class just like the `Item` class in the narrative. Use { get; set; } for each property.
 
 
 2. Checkpoint: **Declare an in-memory list for books**
 
 - At the top of `Program.cs`, add a list to store books.
 
-Hint: It should be a `List<Book>` declared after `var app = builder.Build()`;.
+Hint: It should be a `List<Book>` declared and initialized after `var app = builder.Build()`;.
 
 3. Checkpoint: **Add a POST endpoint to create a new book**
 
@@ -632,6 +638,7 @@ if (b.Title != null && b.Title.ToLower().Contains(title.ToLower()))
   "author": "J.R.R. Tolkien"
 }
 ```
+
 - Now, go to GET `/api/books/{title}`
 - Enter "The Hobbit" and click **Execute**
 
@@ -646,7 +653,13 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-var book_list = new List<Book>();
+
+var book_list = new List<Book>
+{    
+    new Book { Id = 1, Title = "The Pragmatic Programmer", Author = "Andrew Hunt" },
+    new Book { Id = 2, Title = "Clean Code", Author = "Robert C. Martin" },
+    new Book { Id = 3, Title = "Design Patterns", Author = "Erich Gamma" }
+};
 
 if (app.Environment.IsDevelopment())
 {
@@ -686,33 +699,206 @@ public class Book
 
 ### Narrative:
 
+In earlier exercises, we created and retrieved items using POST and GET. Now, let's complete the full CRUD cycle by learning how to update and delete items. This means we'll be able to update existing data and remove it when it's no longer needed.
 
+**Updating resource:**
+
+To update a resource, we use the **PUT** method. In Minimal APIs, this is done with `MapPut()`. Just like `MapGet()` uses a route like `"/api/products/{id}"` to get a specific item, `MapPut()` uses a similar route to identify which item to update. The updated data is sent in the request body as JSON.
+
+Let’s add a PUT endpoint to update an existing product. Place this below your existing endpoints:
+
+```cs
+app.MapPut("/api/products/{id}", (int id, Item updated) =>
+{
+    for (int i = 0; i < products_list.Count; i++)
+    {
+        if (products_list[i].Id == id)
+        {
+            products_list[i] = updated;
+            return Results.Ok(updated);
+        }
+    }
+    return Results.NotFound();
+});
+```
+
+This:
+
+* Reads the `{id}` from the route
+* Searches for a product with that ID
+* Replaces it with the new data from the request body
+* Returns:
+   - `200 OK` with the updated product if found
+   - `404 Not Found` if no matching product exists
+
+**Testing PUT in Swagger:**
+ 
+When we run the app and open Swagger, we’ll see the PUT `/api/products/{id}` endpoint. We can test it by entering an `id` (e.g., 2) and providing updated details like this:
+
+```json
+{
+  "id": 2,
+  "name": "Premium Pen",
+  "price": 29.99
+}
+```
+
+This updates the product with `id` 2 to reflect the new name and price.
+
+**Deleting resource:**
+
+To delete a resource, we use the DELETE method. In Minimal APIs, this is done using `MapDelete()`.
+
+Let’s add a DELETE endpoint to remove an existing product:
+
+```cs
+app.MapDelete("/api/products/{id}", (int id) =>
+{
+    var item_to_remove = products_list.FirstOrDefault(p => p.Id == id);
+    if (item_to_remove is null)
+    {
+        return Results.NotFound();
+    }
+
+    products_list.Remove(item_to_remove);
+    return Results.NoContent();
+});
+```
+
+This:
+
+- Uses `{id}` from the URL to find the product
+- Removes it from `products_list`
+- Returns:
+     - `204 No Content` if the deletion is successful
+     - `404 Not Found` if the product doesn’t exist
+
+**Testing DELETE in Swagger**
+
+In Swagger, we’ll see the DELETE `/api/products/{id}` endpoint. To test it:
+
+- Enter the `id` of the product we want to delete (e.g., 2)
+- Click **Execute**
+- If the product exists, we’ll receive a `204 No Content` response
+- If it doesn’t exist, we’ll get a `404 Not Found`
+
+This completes the CRUD operations using Minimal APIs with route parameter binding.
 
 ### Instructions:
 
-1. Checkpoint: **Define the Book class**
+1. Checkpoint: **Return All Books**
 
+- We already have a `Book` class and a POST `/api/books` endpoint that adds new books to an in-memory list called `book_list`.
+- Your task is to create a GET endpoint that returns all books in `book_list` when `/api/books` is accessed.
 
+Hint: Use `app.MapGet("/api/books", () => book_list);` to return the complete list.
 
+2. Checkpoint: **Update a Book**
 
-2. Checkpoint: **Declare an in-memory list for books**
+- Add a PUT endpoint at `/api/books/{id}` that updates a book with the given ID.
+- Use the updated book details from the request body and replace the existing one if found. If not found, return `404 Not Found`.
 
+Hint: Loop through `book_list`, match the `id`, and replace the book. 
 
+3. Checkpoint: **Delete a Book**
 
-3. Checkpoint: **Add a POST endpoint to create a new book**
+- Add a DELETE endpoint at `/api/books/{id}` that removes a book with the specified ID from `book_list`.
 
+Hint: Use `FirstOrDefault()` to find the book, then call `book_list.Remove()` if it exists. Return `204 No Content` or `404 Not Found`.
 
+4. Checkpoint: **Test endpoints in Swagger**
 
-4. Checkpoint: **Add a GET endpoint to retrieve a book by title**
+- Use the existing POST `/api/books` to add:
 
-
+```json
+{
+  "id": 1,
+  "title": "Learning C#",
+  "author": "Alice",
+}
 ```
 
-5. Checkpoint: **Test both endpoints in Swagger**
+- Use GET `/api/books` to confirm it's listed.
 
+- Update using PUT `/api/books/1` with:
 
+```json
+{
+  "id": 1,
+  "title": "Mastering C#",
+  "author": "Alice B.",
+
+}
+```
+- Delete it using DELETE `/api/books/1`.
+- Try deleting again — you should see `404 Not Found`.
+
+Hint: In Swagger UI, make sure to execute each endpoint in the right order. Use clear IDs and double-check JSON formatting.
 
 **Solution:**
 
 ```cs
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+
+var book_list = new List<Book>
+{    
+    new Book { Id = 1, Title = "The Pragmatic Programmer", Author = "Andrew Hunt" },
+    new Book { Id = 2, Title = "Clean Code", Author = "Robert C. Martin" },
+    new Book { Id = 3, Title = "Design Patterns", Author = "Erich Gamma" }
+};
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+
+app.MapPost("/api/books", (Book b) =>
+{
+    book_list.Add(b);
+    return Results.Created($"/api/books/{b.Id}", b);
+});
+
+app.MapGet("/api/books", () => book_list);
+
+app.MapPut("/api/books/{id}", (int id, Book updated_book) =>
+{
+    for (int i = 0; i < book_list.Count; i++)
+    {
+        if (book_list[i].Id == id)
+        {
+            book_list[i] = updated_book;
+            return Results.Ok(updated_book);
+        }
+    }
+    return Results.NotFound();
+});
+
+app.MapDelete("/api/books/{id}", (int id) =>
+{
+    var book_to_remove = book_list.FirstOrDefault(p => p.Id == id);
+    if (book_to_remove is null)
+    {
+        return Results.NotFound();
+    }
+
+    book_list.Remove(book_to_remove);
+    return Results.NoContent();
+});
+
+app.Run();
+
+public class Book
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
+}
 ```
