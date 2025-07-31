@@ -902,3 +902,67 @@ public class Book
     public string Author { get; set; }
 }
 ```
+
+## Exercise 8: Basic Data Validation
+
+### Narrative:
+
+
+
+### Instructions:
+
+1. Checkpoint: 
+Hint:
+   
+2. Checkpoint: 
+
+Hint: 
+
+
+
+3. Checkpoint: 
+
+Hint: 
+
+
+## Exercise 9: API Documentation with OpenAPI
+
+### Narrative:
+
+
+
+### Instructions:
+
+1. Checkpoint: 
+Hint:
+   
+2. Checkpoint: 
+
+Hint: 
+
+
+
+3. Checkpoint: 
+
+Hint: 
+
+## Exercise 10: Summary
+
+### Narrative:
+
+
+
+### Instructions:
+
+1. Checkpoint: 
+Hint:
+   
+2. Checkpoint: 
+
+Hint: 
+
+
+
+3. Checkpoint: 
+
+Hint: 
