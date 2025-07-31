@@ -506,7 +506,6 @@ In the last exercises, we learned how to:
 Now we will build a tiny product API that lets us:
 * Add a new product using POST
 * Fetch a product by ID using a route parameter
-* Search products by name using a query string
 
 This simulates how real APIs work. For example:
 
@@ -573,54 +572,68 @@ This shows route value binding in action: `{id}` in the URL is passed to the `(i
 When we run the app and open Swagger, we’ll see the `/api/products` endpoint. Testing it with a JSON body like:
 
 ```json
-{ "id": 1, "name": "Notebook", "price": 129.99 }
+{ "id": 1, "name": "Shoes", "price": 150.99 }
 ```
 
 creates a product. Then, fetching `/api/products/1` returns that product. This covers both model binding from JSON (POST) and route binding using a path value (GET).
 
-''''pending
 ### Instructions:
 
-1. Checkpoint: **Define a Data Class for Movie Info**
+1. Checkpoint: **Define the Book class**
 
-- Create a class named `MovieDetails` with properties `Title` (string) and `Year` (int).
-- Place it below the `app.Run()` line in your `Program.cs`.
+- Create a new class called `Book` after `app.Run()`.
+- It should contain these properties:
+    - `Id` (int)
+    - `Title` (string)
+    - `Author` (string)
 
-Hint: Create a class just like the `Item` class shown earlier. Remember, class names start with uppercase and the property names must match the JSON field names.
+Hint: Define the class just like the Product class in the narrative. Use { get; set; } for each property.
 
 
-2. Checkpoint: **Add a new POST endpoint at `/api/movies`**
+2. Checkpoint: **Declare an in-memory list for books**
 
-- Accept a `MovieDetails` object from the request body.
-- Return the object along with a `201 Created` response.
+- At the top of `Program.cs`, add a list to store books.
 
-Hint: Use `app.MapPost()` with the route `/api/movies`. Use `Results.Created()` to return the submitted data.
+Hint: It should be a `List<Book>` declared after `var app = builder.Build()`;.
 
-3. Checkpoint: **Test the Endpoint Using Swagger**
+3. Checkpoint: **Add a POST endpoint to create a new book**
 
-- In Swagger UI, locate the POST `/api/movies` endpoint.
-- Click **Try it out** and submit the following JSON:
+- Create a new POST route `/api/books` that:
+  
+     - Accepts a JSON Book object
+     - Adds it to books list created in Checkpoint 2.
+     - It should return `201 Created` with the new book
+
+Hint: Use `MapPost`, accept a `Book` object as input, and return `Results.Created(...)`.
+
+4. Checkpoint: **Add a GET endpoint to retrieve a book by title**
+
+- Create a GET `/api/books/title/{title} route that:
+    - Receives the `title` from the route
+    - Performs a case-insensitive search through the list of books
+    - Returns the first matched book
+    - If no match is found, return 404
+
+Hint: Use `ToLower()` and `Contains()` inside a `foreach` loop for partial, case-insensitive comparison like this: 
+
+```cs
+if (b.Title != null && b.Title.ToLower().Contains(title.ToLower()))
+```
+
+5. Checkpoint: **Test both endpoints in Swagger**
+
+- Go to POST `/api/books` and click **Try it out**
+- Use this JSON:
 
 ```json
 {
-  "title": "Inception",
-  "year": 2010
+  "id": 1,
+  "title": "The Hobbit",
+  "author": "J.R.R. Tolkien"
 }
 ```
-
-Hint: In Swagger, each endpoint is listed with its method and path. Look for the POST `/api/movies` entry. Click **Try it out**, paste the JSON into the body box, and click **Execute**.
-
-You should see:
-
-- **Status:** 201 Created
-- **Response Body:**
-
-```json
-{
-  "title": "Inception",
-  "year": 2010
-}
-```
+- Now, go to GET `/api/books/{title}`
+- Enter "The Hobbit" and click **Execute**
 
 
 **Solution:**
@@ -633,22 +646,73 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+var book_list = new List<Book>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.MapPost("/api/movies", (MovieDetails new_movie) =>
+app.MapPost("/api/books", (Book b) =>
 {
-    return Results.Created($"/api/movies/{new_movie.Year}", new_movie);
+    book_list.Add(b);
+    return Results.Created($"/api/books/{b.Id}", b);
+});
+
+app.MapGet("/api/books/title/{title}", (string title) =>
+{
+    foreach (var b in book_list)
+    {
+        if (b.Title != null && b.Title.ToLower().Contains(title.ToLower()))
+        {
+            return Results.Ok(b);
+        }
+    }
+    return Results.NotFound();
 });
 
 app.Run();
 
-public class MovieDetails
+public class Book
 {
+    public int Id { get; set; }
     public string Title { get; set; }
-    public int Year { get; set; }
+    public string Author { get; set; }
 }
+```
+
+## Exercise 7: Updating and Deleting Resources
+
+### Narrative:
+
+
+
+### Instructions:
+
+1. Checkpoint: **Define the Book class**
+
+
+
+
+2. Checkpoint: **Declare an in-memory list for books**
+
+
+
+3. Checkpoint: **Add a POST endpoint to create a new book**
+
+
+
+4. Checkpoint: **Add a GET endpoint to retrieve a book by title**
+
+
+```
+
+5. Checkpoint: **Test both endpoints in Swagger**
+
+
+
+**Solution:**
+
+```cs
 ```
