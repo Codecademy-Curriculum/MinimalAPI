@@ -4,33 +4,40 @@
 
 ### Narrative:
 
-Let’s say we want to build a small app — like a task tracker or expense logger — and get started quickly, without setting up controllers, models, or configuration files. This is where **Minimal APIs** in ASP.NET Core come in.
+Let’s say we want to build a small app — like a task tracker or expense logger — and we want to get started quickly. Normally, setting up an API means creating controllers, models, and configuration files. That can take time and feel like a lot when we’re just starting out.
 
-Minimal APIs offer a fast, lightweight way to build HTTP APIs using just a single file —typically `Program.cs`. Unlike traditional ASP.NET Core apps, they require less setup and are great for simple, focused applications.
+Minimal APIs in ASP.NET Core make things easier. We can build a working API using just one file — usually `Program.cs`. This is great when we want to try something out or build a small app fast.
 
-**Why use Minimal APIs?**
+Why this helps:
+
 - Beginner-friendly
-- Less boilerplate
-- Faster startup
-- Ideal for small apps or microservices
+- No complex setup
+- Quick to start
+- Ideal for small apps 
 
-**How to Create:**
-
-To create a project in the current folder, we use
-```cs
+To create a project in the current folder, we run:
+```bash
 dotnet new web
- ```
-Or, to create one in a new folder, we can use:
-```cs
+```
+
+
+Or, to create one in a new folder:
+```bash
 dotnet new web -o MyApiApp
- ```
-The `-o` option specifies the output folder name. Both approaches produce the same structure, with `Program.cs` at its core. We’ll use the current folder method for simplicity.
+```
 
-**What’s inside `Program.cs`:**
+The `-o` option sets the folder name. Both commands gives us the same structure, with `Program.cs` at its core. 
 
-This file drives our API. Here's what the default code looks like: 
+Here's what the default code in `Program.cs` looks like: 
 
-![template code](https://github.com/user-attachments/assets/fe5594d9-c658-4c12-8448-f47584fa73c3)
+```cs
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.MapGet("/", () => "Hello World!");
+
+app.Run();
+```
 
 In the above code:
 
@@ -38,13 +45,21 @@ In the above code:
 - `MapGet()`: Handles requests (we’ll explore this next)
 - `Run()`: Starts the server
  
-**How to Run:**
+To run the app:
 
-1.	Navigate to the folder (if needed):`cd MyApiApp`
+1.	Navigate to the folder (if needed):
+   ```bash
+  	cd MyApiApp
+   ```
    
-2.	Build: `dotnet build`
-   
-3.	Start the server: `dotnet run`
+2.	Build: 
+   ```bash
+  	dotnet build
+   ```
+3.	Start the server:
+   ```bash
+  	dotnet run
+   ```
    
 The terminal will display a local URL such as `https://localhost:5074`.
 
@@ -52,7 +67,7 @@ The terminal will display a local URL such as `https://localhost:5074`.
 
 In most development environments, we would open this URL in a browser to view the API’s response. 
 
-Here, however, a fixed address: `https://localhost:8000` is already set up for us, as shown in the workspace.
+Here, however, a fixed address: `https://localhost:8000` is already set up for us.
 
 This is all it takes to create a working API with a single response.
 
@@ -63,7 +78,7 @@ This is all it takes to create a working API with a single response.
 
 Hint: Use `dotnet new web` syntax to create your Minimal API project.
    
-2. Checkpoint: Open the `Program.cs` file. Click the **Run** button to see what is printed to the screen. Observe the response in the browser.
+2. Checkpoint: Open the `Program.cs` file. Click the Run button to see what is printed to the screen. Observe the response in the browser.
 
 Hint: You don’t have to change anything in the code editor. After pressing the Run button, you should be able to see the following output:
 
@@ -78,9 +93,9 @@ Hint: Replace the string inside `() => "Hello World!"` with any other string, li
 ## Exercise 2: Basic GET Endpoints 
 
 ### Narrative:
-In the previous exercise, we created and ran your first ASP.NET Core Minimal API project. Now, let’s take a closer look at the default code inside `Program.cs`.
+In the previous exercise, we created and ran our first ASP.NET Core Minimal API project. Now, let’s take a closer look at the default code inside `Program.cs`.
 
-One line we noticed is:
+One line we noticed was:
 
 ```cs
 app.MapGet("/", () => "Hello World!");
@@ -88,73 +103,66 @@ app.MapGet("/", () => "Hello World!");
 
 This defines a GET endpoint. But what does that actually mean?
 
-**What is a GET endpoint?**
-
 An **endpoint** is like a stop or address in our API. When someone visits a specific URL, the server matches it to an endpoint and sends a response.
 
-A **GET** request is the most common kind of request used to retrieve data. When your browser visits a website, it's making GET requests behind the scenes.
+A **GET** request is the most common type of request — it’s what browsers use to fetch web pages.
 
-So this line:
+So the line above means:
 
-```csharp
-app.MapGet("/", () => "Hello World!");
-```
-
-means:
-
-"*When someone visits the root URL (i.e., `/`), send back the text: 'Hello World!'.*"
-
-**What does `MapGet()` do?**
+"*When someone visits the root URL (`/`), send back the text: 'Hello World!'.*"
 
 The `MapGet()` method connects a route (like `/` or `/hello`) to a handler function. The handler is the part that generates the response.
 
-Let’s break this down using an example:
+Here’s another example:
 
 ```csharp
 app.MapGet("/hello", () => "Hi there!");
 ```
 
-`/hello` &rarr; This is the path the user will visit.
+In this case:
 
-`() => "Hi there!"` &rarr; This is a lambda expression (a short function) that returns the message.
+`/hello` is the path someone visits.
 
-When someone visits `https://localhost:8000/hello`, they will see `"Hi there!"`.
+`() => "Hi there!"` &rarr; This is a *lambda expression*. A lambda is a quick, inline function that takes inputs (inside the `()`) and returns a result. In this case, it doesn't take any input, and just returns a string (`"Hi there!"`).
 
-Minimal APIs support various response types, such as:
+Minimal APIs can return different kinds of responses. Here are some examples:
 
-- Plain text (string)
-- Current time (`DateTime`)
-- Structured data (JSON objects)
+```cs
+app.MapGet("/text", () => "Just a string");                // Plain text
 
-Let’s try creating all three.
+app.MapGet("/time", () => DateTime.Now);                   // Current time
+
+app.MapGet("/json", () => new { Name = "Dotnet", Age = 8 }); // JSON object
+
+```
+Each endpoint returns a different type of data — plain text, a timestamp, or JSON. Let’s try creating all three.
 
 ### Instructions:
 
-1. Checkpoint: **Add a GET endpoint that returns a custom string**
- 
-- Add a new GET endpoint that listens at `/hello`.
-- It should return the message `"Hello from /hello endpoint"`.
-- Visit `https://localhost:8000/hello` in the browser to view the response.
+1. Checkpoint: Let’s start by adding a friendly message.
+
+Create a new GET endpoint that listens at `/hello` and returns the text `"Hello from /hello endpoint"`. Once added, click the Run button and visit `https://localhost:8000/hello` to see the result in your browser.
+
+Hint: Use the `app.MapGet()` method like this:
+```cs
+app.MapGet("/hello", () => /* your message here */);
+```
 
 
-Hint: Use `app.MapGet("/hello", () => /* your message here */)`;
+2. Checkpoint: Next, return the current time by adding a new GET endpoint at `/time` that returns the current UTC time.
 
-2. Checkpoint: **Add a GET endpoint that returns the current time**
+After running the app, go to `https://localhost:8000/time` and check the output.
 
-- Add a new GET endpoint at `/time`.
-- It should return the current UTC time.
-- Visit `https://localhost:8000/time` in the browser to view the response.
+Hint: Inside the lambda, return `DateTime.UtcNow` to get the correct format.
 
 
-Hint: Return `DateTime.UtcNow` inside the lambda expression.
+3. Checkpoint: Now let’s send back some structured information.
 
-3. Checkpoint: **Add a GET endpoint that returns structured data such as a small JSON object**
+Create a GET endpoint at `/info` that returns an object with two properties — like `name` and `version`. ASP.NET Core will automatically convert it to JSON for us.
 
-- Add a new GET endpoint at `/info`.
-- Return an object with properties like `name` and `version`. The API will automatically convert it to JSON.
-- Visit `https://localhost:8000/info` in the browser to view the JSON response.
+Then, visit `https://localhost:8000/info` to view the response in JSON format.
 
-Hint: Return an anonymous object like `new { name = "...", version = "..." }`.
+Hint: Return something like `new { name = "...", version = "..." }` inside the lambda.
 
 **Solution:**
 
@@ -164,7 +172,7 @@ var app = builder.Build();
 
 app.MapGet("/hello", () => "Hello from /hello endpoint");
 app.MapGet("/time", () => DateTime.UtcNow);
-app.MapGet("/info", () => new { name = "Minimal API", version = "1.0.0" });
+app.MapGet("/info", () => new { name = "Minimal API", version = "1.0" });
 
 app.Run();
 ```
@@ -173,17 +181,17 @@ app.Run();
 
 ### Narrative:
 
-So far, our API returned the same fixed message every time — like `“Hello World”` or the current time. But think about a real website or app. It needs to do more than just say the same thing all the time. For example, imagine a website where users can look up information about different people or products.
+So far, our API returned the same fixed message every time — like `“Hello World”` or the current time. But the real websites or apps need to respond differently depending on what the user asks for. For example, if someone wants to see their profile or check a product, the app needs to know *which* user or product they mean.
 
-If someone wants to see their profile page, the website needs to know which user to show. Or if they want to see details about a specific product, the app must know which product they mean. This means the API has to understand and respond differently depending on what the user asks for. That’s where **route parameters** are used.
+That’s where **route parameters** come in. They’re like method parameters but used in the URL. They let us pass values through the web address so the API can respond with something specific.
 
-A route parameter is a part of the web address (URL) that acts like a placeholder for values. For example:
+Here’s a simple example:
 
 ```cs
 app.MapGet("/greet/{name}", (string name) => $"Hello, {name}!");
 ```
 
-Here, `{name}` is the route parameter. If you visit `/greet/Sam`, the `{name}` part captures `“Sam”` and passes it to the endpoint. The result will be `“Hello, Sam!”`
+Here, `{name}` is the route parameter. If we visit `/greet/Sam`, the `{name}` part captures `“Sam”` and passes it to the endpoint. The result will be `“Hello, Sam!”`
 
 Route parameters can also be limited by constraints. A constraint ensures the value matches a specific type — like an integer. For example:
 
@@ -191,41 +199,41 @@ Route parameters can also be limited by constraints. A constraint ensures the va
 app.MapGet("/api/items/{id:int}", (int id) => $"Item ID is: {id}");
 ```
 
-This only works if the `id` is a number such as `/api/items/42`. Visiting `/api/items/apple` won’t work — the server returns a **404 Not Found**. This helps prevent invalid data from reaching our code.
+This only works if the `id` is a number such as `/api/items/42`. Visiting `/api/items/apple` returns a **404 Not Found** — which means the server couldn’t find a matching endpoint. This helps prevent invalid data from reaching our code.
 
 By using route parameters, we can create APIs that return personalized messages or custom JSON based on user input.
 
-Learning route parameters is an important step toward building smarter, more flexible APIs that respond meaningfully to different requests.
+Let’s create some endpoints that return different responses based on what’s passed in the URL.
 
 ### Instructions:
 
-1. Checkpoint: **Favorite Color Message**
+1. Checkpoint: Ceate a GET endpoint at `/color/{favorite_color}` that returns a message like: `"Your favorite color is blue!"` or `"Your favorite color is green!"`
+
+Just replace `{favorite_color}` with a route parameter and use it in the response.
+
+Hint: Use string `favorite_color` inside the lambda.
    
-- Create a GET endpoint at `/color/{favorite_color}` that returns a message like: `"Your favorite color is {favorite_color}!"`
-- Test it by visiting `/color/blue` or `/color/green`.
+2. Checkpoint: Now let’s handle numbers using constraints.
 
-Hint: Use a string route parameter to capture the color and return it in the response.
+Create a GET endpoint at `/order/{order_number:int}` that responds with: `"Order number 1234 is being processed."`
 
-2. Checkpoint: **Order Status Checker**
+Try `/order/1234` in the browser. If we use a word like `/order/abc`, we should see a 404 error — meaning the route only accepts numbers.
 
-- Create a GET endpoint at `/order/{order_number:int}` that returns a message like: `"Order number {order_number} is being processed."`
-- Test by visiting `/order/1234`. Non-numeric order numbers should return a 404 error.
+Hint: Add `:int` after the parameter name in the URL pattern.
 
-Hint: Add `:int` after `{order_number}` to only allow numbers.
+3. Checkpoint: Let’s try returning a full object.
 
-3. Checkpoint: **Book Details JSON**
+Create a GET endpoint at `/book/{isbn}` that sends back a JSON object with:
 
-Create a GET endpoint at `/book/{isbn}` that returns a JSON object with:
+- `isbn`: the value from the URL
 
-- `isbn`: the ISBN string from the route
-- `title`: a fixed title, for example "API Basics"
-- `available`: true
+- `title`: `"API Basics"`
 
-Test by visiting `/book/9781234567890` and check the JSON response.
-  
-Hint: Return an anonymous object using syntax like: 
+- `available`: `true`
 
-`new { isbn = ..., title = ..., available = ... }`
+Try visiting `/book/9781234567890` and check the JSON response.
+
+Hint: Use `new { isbn = isbn, title = "...", available = true }` inside the lambda.
 
 **Solution:**
 
@@ -246,11 +254,11 @@ app.Run();
 
 ### Narrative:
 
-Imagine a travel website where users can submit feedback after a trip. We want to build an endpoint where users can send a message like “Great service!” and responds with a confirmation.
+Up until now, we’ve only received data from our API — like messages or the current time. But what if we want to send data to the server? For example, imagine a travel website where users submit feedback after a trip. We want to build an endpoint where someone can send a message like “Great service!” and get a confirmation back.
 
-To handle this kind of data submission, we use the **POST** method — which is designed to send data to the server, unlike GET which only retrieves it. Minimal APIs support this through the `MapPost()` method.
+To do this, we use the POST method. Unlike GET, which only fetches data, POST is used to send data to the server. Minimal APIs support this through the `MapPost()` method.
 
-You can define a POST endpoint using `MapPost()` like this:
+Here’s a simple example:
 
 ```cs
 app.MapPost("/feedback", (string body) =>
@@ -262,19 +270,19 @@ Let’s break it down:
 
 - The endpoint listens at `/feedback`.
 - It accepts plain text from the request body (captured in `body`).
-- It returns a **201 Created** response using `Results.Created()` — which indicates success and includes a message back to the user.
-  
-To test this, we’ll use **Swagger UI**, a built-in tool that that displays our API and lets us interact with endpoints.
+- It returns a **201 Created** response using `Results.Created()`.
 
-Since the `dotnet new web` template doesn’t come with Swagger enabled, we need to configure it manually:
- 
-**Step 1. Install Swagger using the terminal:**
+The `Results.Created()` method tells the client something was successfully created. The first argument is the location ("/feedback"), and the second is a confirmation message. 
 
-```bash
-dotnet add package Swashbuckle.AspNetCore
-```
+So when someone sends a message like `“Great service!”` to `/feedback`, the server replies with:
 
-**Step 2. Enable Swagger services before ` var app = builder.Build()`:**
+- **Status:** `201 Created` 
+- **Body:** Feedback received: Great service!
+
+
+To test this, we’ll use Swagger UI — a built-in tool that shows our API and lets us try out endpoints in the browser. We just need to enable it by adding these lines to `Program.cs`:
+
+Before ` var app = builder.Build()`:
 
 ```cs
 builder.Services.AddEndpointsApiExplorer();
@@ -282,7 +290,7 @@ builder.Services.AddSwaggerGen();
 
 ```
 
-**Step 33. Add Swagger middleware after `var app = builder.Build()`:**
+After `var app = builder.Build()`:**
 
 ```cs
 if (app.Environment.IsDevelopment())
@@ -292,7 +300,7 @@ if (app.Environment.IsDevelopment())
 }
 ```
 
-Once this setup is complete, running the app and visiting `https://localhost:8000/swagger` (or port specified on your local machine) will show the Swagger UI where we can test GET and POST endpoints directly in the browser.
+Once that’s done, running the app and visiting `https://localhost:8000/swagger` (or port specified on your local machine) will show the Swagger UI where we can test GET and POST endpoints directly in the browser.
 
 It looks something like this:
 
@@ -418,32 +426,20 @@ We’ll see:
 - **Status Code:** 201 Created
 - **Response Body:** Your submitted data.
 
-<img width="551" height="715" alt="Picture4" src="https://github.com/user-attachments/assets/3b87a70d-2375-4cd1-969f-d8b7d333a15f" />
-
-
-We can see the object echoed back in the response — a clear sign that model binding worked.
+This is a clear sign that model binding worked.
 
 ### Instructions:
 
-1. Checkpoint: **Define a Data Class for Movie Info**
-
-- Create a class named `MovieDetails` with properties `Title` (string) and `Year` (int).
-- Place it below the `app.Run()` line in your `Program.cs`.
+1. Checkpoint: Create a class named `MovieDetails` with properties `Title` (string) and `Year` (int). Place this class below the `app.Run()` line in your `Program.cs`.
 
 Hint: Create a class just like the `Item` class shown earlier. Remember, class names start with uppercase and the property names must match the JSON field names.
 
 
-2. Checkpoint: **Add a new POST endpoint at `/api/movies`**
+2. Checkpoint: Define a new POST endpoint at `/api/movies` that accepts a `MovieDetails` object from the request body. This object should automatically bind from the incoming JSON. The endpoint should return the same object using a `201 Created` status code.
 
-- Accept a `MovieDetails` object from the request body.
-- Return the object along with a `201 Created` response.
+Hint: Use `app.MapPost("/api/movies", (MovieDetails movie) => …)` with the route `/api/movies`. Use `Results.Created()` to return the submitted data.
 
-Hint: Use `app.MapPost()` with the route `/api/movies`. Use `Results.Created()` to return the submitted data.
-
-3. Checkpoint: **Test the Endpoint Using Swagger**
-
-- In Swagger UI, locate the POST `/api/movies` endpoint.
-- Click **Try it out** and submit the following JSON:
+3. Checkpoint: Locate the POST `/api/movies` endpoint in Swagger UI and and click **Try it out**. Paste the following JSON into the request body:
 
 ```json
 {
@@ -451,7 +447,6 @@ Hint: Use `app.MapPost()` with the route `/api/movies`. Use `Results.Created()` 
   "year": 2010
 }
 ```
-
 Hint: In Swagger, each endpoint is listed with its method and path. Look for the POST `/api/movies` entry. Click **Try it out**, paste the JSON into the body box, and click **Execute**.
 
 You should see:
@@ -550,7 +545,7 @@ app.MapPost("/api/products", (Item new_item) =>
 This endpoint:
 * Accepts a JSON Product (`p`) from the client  
 * Adds it to the list (`products_list`)
-* Returns the product with a **201 Created** status
+* Returns the product with a `201 Created` status
 
 We also add a GET endpoint to retrieve a product by ID:
 
@@ -585,40 +580,19 @@ creates a product. Then, fetching `/api/products/1` returns that product. This c
 
 ### Instructions:
 
-1. Checkpoint: **Define the Book class**
+1. Checkpoint: Create a class named `Book` below the `app.Run()` line in `Program.cs`. It should have three properties: `Id` (int), `Title` (string), and `Author` (string).
 
-- Create a new class called `Book` after `app.Run()`.
-- It should contain these properties:
-    - `Id` (int)
-    - `Title` (string)
-    - `Author` (string)
+Hint: Follow the same format as the `Item` class shown earlier. Each property should use `{ get; set; }`.
 
-Hint: Define the class just like the `Item` class in the narrative. Use { get; set; } for each property.
-
-
-2. Checkpoint: **Declare an in-memory list for books**
-
-- At the top of `Program.cs`, add a list to store books.
+2. Checkpoint: Create a new in-memory list to hold `Book` objects after `var app = builder.Build();`. This list will store the data submitted to the API.
 
 Hint: It should be a `List<Book>` declared and initialized after `var app = builder.Build()`;.
 
-3. Checkpoint: **Add a POST endpoint to create a new book**
-
-- Create a new POST route `/api/books` that:
-  
-     - Accepts a JSON Book object
-     - Adds it to books list created in Checkpoint 2.
-     - It should return `201 Created` with the new book
+3. Checkpoint: Add a new POST endpoint at `/api/books`. It should accept a `Book` object from the request body, add it to the books list, and return a `201 Created` response containing the added book.
 
 Hint: Use `MapPost`, accept a `Book` object as input, and return `Results.Created(...)`.
 
-4. Checkpoint: **Add a GET endpoint to retrieve a book by title**
-
-- Create a GET `/api/books/title/{title} route that:
-    - Receives the `title` from the route
-    - Performs a case-insensitive search through the list of books
-    - Returns the first matched book
-    - If no match is found, return 404
+4. Checkpoint: Add a GET endpoint at `/api/books/title/{title}`. It should take the `title` from the route, search the list of books, and return the first match using a case-insensitive check. If no book matches, return a `404 Not Found`.
 
 Hint: Use `ToLower()` and `Contains()` inside a `foreach` loop for partial, case-insensitive comparison like this: 
 
@@ -626,10 +600,7 @@ Hint: Use `ToLower()` and `Contains()` inside a `foreach` loop for partial, case
 if (b.Title != null && b.Title.ToLower().Contains(title.ToLower()))
 ```
 
-5. Checkpoint: **Test both endpoints in Swagger**
-
-- Go to POST `/api/books` and click **Try it out**
-- Use this JSON:
+5. Checkpoint: In Swagger UI, test the POST `/api/books` endpoint. Click **Try it out**, and submit this JSON:
 
 ```json
 {
@@ -639,9 +610,7 @@ if (b.Title != null && b.Title.ToLower().Contains(title.ToLower()))
 }
 ```
 
-- Now, go to GET `/api/books/{title}`
-- Enter "The Hobbit" and click **Execute**
-
+Then test the GET `/api/books/title/{title}` endpoint by entering `The Hobbit` and clicking **Execute**. You should see the book details in the response.
 
 **Solution:**
 
@@ -701,8 +670,6 @@ public class Book
 
 In earlier exercises, we created and retrieved items using POST and GET. Now, let's complete the full CRUD cycle by learning how to update and delete items. This means we'll be able to update existing data and remove it when it's no longer needed.
 
-**Updating resource:**
-
 To update a resource, we use the **PUT** method. In Minimal APIs, this is done with `MapPut()`. Just like `MapGet()` uses a route like `"/api/products/{id}"` to get a specific item, `MapPut()` uses a similar route to identify which item to update. The updated data is sent in the request body as JSON.
 
 Let’s add a PUT endpoint to update an existing product. Place this below your existing endpoints:
@@ -731,8 +698,6 @@ This:
    - `200 OK` with the updated product if found
    - `404 Not Found` if no matching product exists
 
-**Testing PUT in Swagger:**
- 
 When we run the app and open Swagger, we’ll see the PUT `/api/products/{id}` endpoint. We can test it by entering an `id` (e.g., 2) and providing updated details like this:
 
 ```json
@@ -745,11 +710,7 @@ When we run the app and open Swagger, we’ll see the PUT `/api/products/{id}` e
 
 This updates the product with `id` 2 to reflect the new name and price.
 
-**Deleting resource:**
-
-To delete a resource, we use the DELETE method. In Minimal APIs, this is done using `MapDelete()`.
-
-Let’s add a DELETE endpoint to remove an existing product:
+To delete a resource, we use the DELETE method. In Minimal APIs, this is done using `MapDelete()`. Let’s add a DELETE endpoint to remove an existing product:
 
 ```cs
 app.MapDelete("/api/products/{id}", (int id) =>
@@ -773,8 +734,6 @@ This:
      - `204 No Content` if the deletion is successful
      - `404 Not Found` if the product doesn’t exist
 
-**Testing DELETE in Swagger**
-
 In Swagger, we’ll see the DELETE `/api/products/{id}` endpoint. To test it:
 
 - Enter the `id` of the product we want to delete (e.g., 2)
@@ -786,29 +745,21 @@ This completes the CRUD operations using Minimal APIs with route parameter bindi
 
 ### Instructions:
 
-1. Checkpoint: **Return All Books**
-
-- We already have a `Book` class and a POST `/api/books` endpoint that adds new books to an in-memory list called `book_list`.
-- Your task is to create a GET endpoint that returns all books in `book_list` when `/api/books` is accessed.
+1. Checkpoint: Add a new GET endpoint at `/api/books` that returns all books in the existing `book_list`. This will help to retrieve everything added so far.
 
 Hint: Use `app.MapGet("/api/books", () => book_list);` to return the complete list.
 
-2. Checkpoint: **Update a Book**
-
-- Add a PUT endpoint at `/api/books/{id}` that updates a book with the given ID.
-- Use the updated book details from the request body and replace the existing one if found. If not found, return `404 Not Found`.
+2. Checkpoint: Add a PUT endpoint at `/api/books/{id}`. This should update the book with the given ID using the data from the request body. If the book is found, update its values. If not, return `404 Not Found`.
 
 Hint: Loop through `book_list`, match the `id`, and replace the book. 
 
-3. Checkpoint: **Delete a Book**
+3. Checkpoint: Add a DELETE endpoint at `/api/books/{id}`. It should search for a book with the given ID, remove it if it exists, and return `204 No Content`. If no match is found, return `404 Not Found`.
 
-- Add a DELETE endpoint at `/api/books/{id}` that removes a book with the specified ID from `book_list`.
+Hint: Use `FirstOrDefault()` to find the book, then call `book_list.Remove()` if it exists. 
 
-Hint: Use `FirstOrDefault()` to find the book, then call `book_list.Remove()` if it exists. Return `204 No Content` or `404 Not Found`.
+4. Checkpoint: In Swagger UI,
 
-4. Checkpoint: **Test endpoints in Swagger**
-
-- Use the existing POST `/api/books` to add:
+- Add a book using POST `/api/books`:
 
 ```json
 {
@@ -818,9 +769,9 @@ Hint: Use `FirstOrDefault()` to find the book, then call `book_list.Remove()` if
 }
 ```
 
-- Use GET `/api/books` to confirm it's listed.
+- Then, use GET `/api/books` to confirm it appears.
 
-- Update using PUT `/api/books/1` with:
+- Update the book using PUT `/api/books/1` with:
 
 ```json
 {
@@ -830,7 +781,10 @@ Hint: Use `FirstOrDefault()` to find the book, then call `book_list.Remove()` if
 
 }
 ```
-- Delete it using DELETE `/api/books/1`.
+ and verify the changes.
+ 
+- Finally, delete the book using DELETE `/api/books/1`.
+  
 - Try deleting again — you should see `404 Not Found`.
 
 Hint: In Swagger UI, make sure to execute each endpoint in the right order. Use clear IDs and double-check JSON formatting.
@@ -907,7 +861,41 @@ public class Book
 
 ### Narrative:
 
+In the last exercise, we completed full CRUD using:
 
+- `POST`, `GET`, `PUT`, and `DELETE`
+- Route parameters, query strings, and JSON body binding
+
+So far, our API accepts any data — even invalid or empty values.
+
+Now, we’ll learn how to protect our API by:
+
+- Rejecting bad input (e.g., empty names, negative prices)
+- Returning clear error messages and `400 Bad Request` responses
+- Writing simple, automatic validations using attributes in the model
+
+This builds real-world habits. For example:
+
+- A shopping cart shouldn’t allow products with no name or price below 0
+- Users should see helpful error messages when they send bad input
+
+In your existing `Item` class, add **Data Annotations** to enforce rules.
+
+Go to the bottom of your `Program.cs` and update the `Product` class like this:
+
+```cs
+public class Item
+{
+    public int Id { get; set; }
+
+    [Required]
+    [StringLength(100, MinimumLength = 3)]
+    public string Name { get; set; }
+
+    [Range(0.01, 100000)]
+    public decimal Price { get; set; }
+}
+```
 
 ### Instructions:
 
