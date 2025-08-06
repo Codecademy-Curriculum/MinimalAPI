@@ -135,7 +135,38 @@ app.MapGet("/time", () => DateTime.Now);                   // Current time
 app.MapGet("/json", () => new { Name = "Dotnet", Age = 8 }); // JSON object
 
 ```
-Each endpoint returns a different type of data — plain text, a timestamp, or JSON. Let’s try creating all three.
+Each endpoint returns a different type of data — plain text, a timestamp, or JSON. 
+
+To test these endpoints easily, we’ll use **Swagger UI** — a built-in tool that shows our API and lets us try out endpoints in the browser. 
+
+To enable Swagger, we need to add Swagger services before `var app = builder.Build()`:
+
+```cs
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+```
+Then, add Swagger middleware after `var app = builder.Build()`:
+
+```cs
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+```
+
+Once that’s done, running the app and visiting `https://localhost:8000/swagger` (or port specified on your local machine) will show the Swagger UI where we can test all the endpoints directly in the browser.
+
+It looks something like this:
+
+<img width="758" height="281" alt="image" src="https://github.com/user-attachments/assets/0e836040-cc09-4bec-926d-2a66042fba71" />
+
+In this UI, we can see a list of all the endpoints defined in the application. To test any endpoint — for example, the `GET /time` endpoint — we can click on it to expand details, then click **"Try it out"** and **"Execute"** to send a real request to the API.
+
+<img width="758" height="687" alt="image" src="https://github.com/user-attachments/assets/a4732104-2953-4f05-9043-397a4215a4f9" />
+
+
 
 ### Instructions:
 
@@ -164,11 +195,28 @@ Then, visit `https://localhost:8000/info` to view the response in JSON format.
 
 Hint: Return something like `new { name = "...", version = "..." }` inside the lambda.
 
+4. Checkpoint: Finally, test all three endpoints using Swagger.
+
+We have already enabled Swagger for you. Just open `https://localhost:8000/swagger` in the browser, click **Try it out** next to each endpoint, and execute the request to see the response.
+  
+
 **Solution:**
 
 ```cs
 var builder = WebApplication.CreateBuilder(args);
+
+//Swagger services 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+//Swagger middleware
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.MapGet("/hello", () => "Hello from /hello endpoint");
 app.MapGet("/time", () => DateTime.UtcNow);
@@ -211,6 +259,8 @@ Let’s create some endpoints that return different responses based on what’s 
 
 Just replace `{favorite_color}` with a route parameter and use it in the response.
 
+After adding it, head to the Swagger UI (/swagger) and try entering different color values like blue, red, or yellow in the input field.
+
 Hint: Use string `favorite_color` inside the lambda.
    
 2. Checkpoint: Now let’s handle numbers using constraints.
@@ -235,11 +285,25 @@ Try visiting `/book/9781234567890` and check the JSON response.
 
 Hint: Use `new { isbn = isbn, title = "...", available = true }` inside the lambda.
 
+4. Checkpoint: You can also test all three endpoints using Swagger.
+   
+Open `https://localhost:8000/swagger` in the browser, click **Try it out** next to each endpoint, and hit Execute to see the response.
+
 **Solution:**
 
 ```cs
-var builder = WebApplication.CreateBuilder(args);
+//Swagger services 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+//Swagger middleware
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.MapGet("/color/{favorite_color}", (string favorite_color) => $"Your favorite color is {favorite_color}!");
 
@@ -279,51 +343,21 @@ So when someone sends a message like `“Great service!”` to `/feedback`, the 
 - **Status:** `201 Created` 
 - **Body:** Feedback received: Great service!
 
+We can easily test this using the Swagger UI. Simply open the Swagger page in the browser, find the `POST /feedback` endpoint, click **Try it out**, enter a message, and hit **Execute**.
 
-To test this, we’ll use Swagger UI — a built-in tool that shows our API and lets us try out endpoints in the browser. We just need to enable it by adding these lines to `Program.cs`:
+Swagger will display:
 
-Before ` var app = builder.Build()`:
-
-```cs
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-```
-
-After `var app = builder.Build()`:**
-
-```cs
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-```
-
-Once that’s done, running the app and visiting `https://localhost:8000/swagger` (or port specified on your local machine) will show the Swagger UI where we can test GET and POST endpoints directly in the browser.
-
-It looks something like this:
-
-<img width="628" height="371" alt="image" src="https://github.com/user-attachments/assets/c8667a57-30aa-46e8-b1c0-f236d41182f8" />
-
-In this UI, we can see a list of all the endpoints defined in the application. To test any endpoint — for example, the `GET /` endpoint — we can click on it to expand details, then click **"Try it out"** and **"Execute"** to send a real request to the API.
-
-<img width="551" height="715" alt="Picture3" src="https://github.com/user-attachments/assets/de0bd2ba-4a50-4a04-8cb0-3919d0ea1975" />
-
-
-Similarly, to try out a POST endpoint like `/feedback`, click **Try it out**, enter a message, and hit **Execute**. The response appears just below — including the **Status Code** (`201 Created`) and the **Response body** showing your confirmation message.
-
-<img width="597" height="746" alt="Picture2" src="https://github.com/user-attachments/assets/dff3fe41-3f4b-422a-b20b-4432f9e1c8fb" />
-
+- The status code (`201 Created`)
+- The response body with the confirmation message
 
 This makes it easy to confirm whether our POST endpoint behaves as expected — without needing a separate API client like Postman.
 
 
 ### Instructions:
 
-1. Checkpoint: **Enable Swagger UI in the project**
+1. Checkpoint: Let's first enable Swagger UI to visualize and test all the endpoints.
 
-Swagger is already installed in this environment. You need to:
+As Swagger is already installed in this environment, you need to:
 
 - Add Swagger services before `var app = builder.Build()`, and Swagger middleware after it.
 - Click the **Run** button and open `https://localhost:8000/swagger` in the browser.
@@ -332,19 +366,13 @@ For now, you can only see the default GET endpoint.
 
 Hint: Use `AddEndpointsApiExplorer()` and `AddSwaggerGen()` before `Build()`; add `UseSwagger()` and `UseSwaggerUI()` after `Build()`. 
 
-2. Checkpoint: **Create a POST endpoint for support tickets**
+2. Checkpoint: Define a new POST route at `/api/support` that accept plain text input from the request body.
 
-- Define a new POST route at `/api/support` that accept plain text input from the request body.
-- Return a message such as:
-  
-`"Support request received: <your message>"`
+Return a message such as `"Support request received: <your message>"`
   
 Hint:  Use `MapPost()` with a string parameter and return `Results.Created()`.
 
-3. Checkpoint: **Test the `/api/support` POST endpoint using Swagger**
-
-- Use Swagger UI to send a test message to your `/api/support` POST endpoint.
-- Confirm that the response returns `201 Created` with your input message.
+3. Checkpoint: Use Swagger UI to send a test message to your `/api/support` POST endpoint. Confirm that the response returns `201 Created` with your input message.
 
 Hint: In Swagger UI, click **Try it out** next to `/api/support`, enter a sample message like `"My app keeps crashing on login."`, and hit **Execute** to see the response.
 
@@ -377,7 +405,7 @@ app.Run();
 
 ### Narrative:
 
-In the previous Exercise, you created a basic `POST` endpoint that accepted **plain text**. That was a great first step toward understanding how clients send data to a server.
+In the previous exercise, we created a basic `POST` endpoint that accepted **plain text**. That was a great first step toward understanding how clients send data to a server.
 
 But in real-world applications, data is usually sent in a structured format like **JSON**. Imagine building an e-commerce app where customers can add new products. Each product has a name and a price or ID. When a user submits a form, the data gets sent to your API — not as plain text, but as a structured format like JSON.
 
@@ -1178,23 +1206,29 @@ public class Book
 }
 ```
 
-## Exercise 10: Summary
+## Exercise 10: Review
 
 ### Narrative:
 
+Great work completing the journey through building APIs with ASP.NET Core Minimal APIs. In this lesson, you built up your knowledge step-by-step — from writing your first endpoint to creating a fully functional and validated API with documentation.
 
+In this lesson, you learned:
+- how to create a new minimal API project using `dotnet new web`
+- how to define your first GET and POST endpoints using `MapGet()` and `MapPost()`
+- how to receive JSON data from the request body using model binding
+- how to handle route parameters (`/api/products/{id}`) for resource identification
+- how to build a simple CRUD system using `GET`, `POST`, `PUT`, and `DELETE`
+- how to validate request data using Data Annotations like `[Required]` and `[Range]`
+- how to manually trigger model validation and return structured `400 Bad Request` errors
+- how to enable Swagger/OpenAPI for automatic documentation
+- how to describe endpoints using `.WithSummary()` to enhance documentation
+- how to use Swagger UI to explore, test, and debug all endpoints interactively
+- the importance of meaningful responses with correct HTTP status codes
+- how all these pieces come together to build a functional, documented, and testable API
 
-### Instructions:
+You went from writing a hard-coded "Hello World" to building a professional-grade API with real-world patterns. This experience prepares you for building real-world web services — with a strong foundation in routing, data modeling, validation, and documentation.
 
-1. Checkpoint: 
-Hint:
-   
-2. Checkpoint: 
+### Instruction
 
-Hint: 
+Use the workspace to explore the Book API or experiment with what you’ve learned. Try adding new endpoints, modifying existing ones, or adjusting validation to observe how the API behaves.
 
-
-
-3. Checkpoint: 
-
-Hint: 
