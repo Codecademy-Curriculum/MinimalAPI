@@ -580,7 +580,7 @@ creates a product. Then, fetching `/api/products/1` returns that product. This c
 
 ### Instructions:
 
-1. Checkpoint: Create a class named `Book` below the `app.Run()` line in `Program.cs`. It should have three properties: `Id` (int), `Title` (string), and `Author` (string).
+1. Checkpoint: Create a class named `Book` below the `app.Run()` line in `Program.cs`. It should have three properties: `Id` (int), `Title` (string), and `Pages` (int).
 
 Hint: Follow the same format as the `Item` class shown earlier. Each property should use `{ get; set; }`.
 
@@ -606,7 +606,7 @@ if (b.Title != null && b.Title.ToLower().Contains(title.ToLower()))
 {
   "id": 1,
   "title": "The Hobbit",
-  "author": "J.R.R. Tolkien"
+  "Pages": 480
 }
 ```
 
@@ -625,9 +625,9 @@ var app = builder.Build();
 
 var book_list = new List<Book>
 {    
-    new Book { Id = 1, Title = "The Pragmatic Programmer", Author = "Andrew Hunt" },
-    new Book { Id = 2, Title = "Clean Code", Author = "Robert C. Martin" },
-    new Book { Id = 3, Title = "Design Patterns", Author = "Erich Gamma" }
+    new Book { Id = 1, Title = "The Pragmatic Programmer", Pages = 390 },
+    new Book { Id = 2, Title = "Clean Code", Pages = 630 },
+    new Book { Id = 3, Title = "Design Patterns", Pages = 505 }
 };
 
 if (app.Environment.IsDevelopment())
@@ -660,7 +660,7 @@ public class Book
 {
     public int Id { get; set; }
     public string Title { get; set; }
-    public string Author { get; set; }
+    public string Pages { get; set; }
 }
 ```
 
@@ -765,7 +765,7 @@ Hint: Use `FirstOrDefault()` to find the book, then call `book_list.Remove()` if
 {
   "id": 1,
   "title": "Learning C#",
-  "author": "Alice",
+  "pages": 200,
 }
 ```
 
@@ -777,7 +777,7 @@ Hint: Use `FirstOrDefault()` to find the book, then call `book_list.Remove()` if
 {
   "id": 1,
   "title": "Mastering C#",
-  "author": "Alice B.",
+  "pages": 1000,
 
 }
 ```
@@ -792,6 +792,7 @@ Hint: In Swagger UI, make sure to execute each endpoint in the right order. Use 
 **Solution:**
 
 ```cs
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -799,28 +800,18 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+var book_list = new List<Book>();
 
-var book_list = new List<Book>
-{    
-    new Book { Id = 1, Title = "The Pragmatic Programmer", Author = "Andrew Hunt" },
-    new Book { Id = 2, Title = "Clean Code", Author = "Robert C. Martin" },
-    new Book { Id = 3, Title = "Design Patterns", Author = "Erich Gamma" }
-};
+app.UseSwagger();
+app.UseSwaggerUI();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.MapGet("/api/books", () => book_list);
 
 app.MapPost("/api/books", (Book b) =>
 {
     book_list.Add(b);
     return Results.Created($"/api/books/{b.Id}", b);
 });
-
-app.MapGet("/api/books", () => book_list);
 
 app.MapPut("/api/books/{id}", (int id, Book updated_book) =>
 {
@@ -852,8 +843,10 @@ app.Run();
 public class Book
 {
     public int Id { get; set; }
+
     public string Title { get; set; }
-    public string Author { get; set; }
+
+    public int Pages { get; set; }
 }
 ```
 
@@ -861,27 +854,22 @@ public class Book
 
 ### Narrative:
 
-In the last exercise, we completed full CRUD using:
+In the last exercise, we implemented full CRUD using:
 
 - `POST`, `GET`, `PUT`, and `DELETE`
-- Route parameters, query strings, and JSON body binding
+- Route parameters and JSON body binding
 
-So far, our API accepts any data — even invalid or empty values.
+So far, our API accepts any data — even blank names, negative prices, or missing fields. That’s not good for real-world applications.
 
-Now, we’ll learn how to protect our API by:
+Let’s fix that by adding **validation rules** to the model. This helps the API:
 
-- Rejecting bad input (e.g., empty names, negative prices)
-- Returning clear error messages and `400 Bad Request` responses
-- Writing simple, automatic validations using attributes in the model
+- Reject bad or incomplete data
+- Return clear error messages
+- Accept only meaningful, valid input
 
-This builds real-world habits. For example:
+We can do this by adding **data annotations** to our model. These are small tags that enforce validation rules when data is sent to the server. 
 
-- A shopping cart shouldn’t allow products with no name or price below 0
-- Users should see helpful error messages when they send bad input
-
-In your existing `Item` class, add **Data Annotations** to enforce rules.
-
-Go to the bottom of your `Program.cs` and update the `Product` class like this:
+Here’s an updated `Item` class with validation rules:
 
 ```cs
 public class Item
@@ -896,43 +884,299 @@ public class Item
     public decimal Price { get; set; }
 }
 ```
+In this:
+- `[Required]` ensures the property isn't null or empty.
+- `[StringLength(100, MinimumLength = 3)]` specifies valid string length boundaries.
+- `[Range(0.01, 100000)]` ensures numeric values are within the specified range.
+
+These attributes come from this namespace:
+```cs
+using System.ComponentModel.DataAnnotations;
+```
+However, in minimal APIs, validation doesn’t run automatically. We must trigger it manually in the endpoint.
+
+Here’s how to implement validation in the POST endpoint:
+
+```cs
+app.MapPost("/api/products", (Item new_item) =>
+{
+    var ctx = new ValidationContext(new_item);
+    var results = new List<ValidationResult>();
+
+    bool isValid = Validator.TryValidateObject(book, ctx, results, true);
+
+    if (!isValid)
+    {
+        return Results.BadRequest(results);
+    }
+
+    products_list.Add(new_item);
+    return Results.Created($"/api/products/{new_item.Id}", new_item);
+});
+```
+What this code does:
+
+- `ValidationContext`: Defines what to validate, here it's `new_item`
+- `List<ValidationResult>`: A container to hold all validation errors if the input fails validation.
+- `Validator.TryValidateObject(...)`: Manually runs validation against the object using any `[Required]`, `[Range]`, or `[StringLength]` rules. 
+    - **First parameter:** The object to validate — `new_item`
+    - **Second:** The validation context — `ctx`
+    - **Third:** The list to collect validation errors — `results`
+    - **Fourth (true):** Ensures nested objects are also validated
+
+- `Results.BadRequest(results)`: If invalid, this returns a `400 Bad Request` response. The results contain detailed messages about which rules failed.
+
+This is how we make sure only valid data enters our API. We can apply the same pattern to other endpoints like PUT as well.
+
+Next, let’s try adding similar validations to the `Book` object.
 
 ### Instructions:
 
-1. Checkpoint: 
-Hint:
+1. Checkpoint: We already have a `Book` class and a POST `/api/books` endpoint that accepts new books. Your first task is to add validation rules to the model class so the API only accepts meaningful data.
+
+Make sure both `Id` and `Title` are marked as required fields. The `Title` should also have a length constraint between 3 and 100 characters. Additionally, ensure that the `Pages` property falls within a reasonable range.
+
+Hint: Use `[Required]` on both `Id` and `Title`, `[StringLength(100, MinimumLength = 3)]` to limit title length, and `[Range(1, 2000)]` to ensure pages are within bounds.
+  
+2. Checkpoint: Now that the model has validation rules, update the POST `/api/books` endpoint to actually enforce them. You’ll need to manually validate the model using `ValidationContext` and `Validator.TryValidateObject`.
+
+If validation fails, return a `400 Bad Request` along with the list of validation errors. If the input is valid, continue adding the book to the list.
+
+Hint: Use a `ValidationContext` and a `List<ValidationResult>` to collect any validation issues. Return `Results.BadRequest(results)` when validation fails.
+
+
+3. Checkpoint: Now test your endpoint using Swagger UI.
    
-2. Checkpoint: 
+First, submit a valid book with all fields filled correctly. Then, try different invalid cases — like a missing title, a short title, or too many pages — and observe how the API responds with helpful error messages.
 
-Hint: 
+Hint: Use Swagger’s **Try it out** button on POST `/api/books`. Try this valid input:
 
+```json
+{
+  "id": 1,
+  "title": "Learn APIs",
+  "pages": 250
+}
+```
+Then try invalid inputs like:
 
+- A title that’s only 1 character long
+- A page count of 0
+- A missing `Id` or `Title`
 
-3. Checkpoint: 
+You should get `400 Bad Request` responses with specific validation errors.
 
-Hint: 
+**Solution:**
 
+```cs
+using System.ComponentModel.DataAnnotations;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// In-memory list to store books
+var book_list = new List<Book>();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// GET all books
+app.MapGet("/api/books", () => book_list);
+
+// POST a new book with validation
+app.MapPost("/api/books", (Book book) =>
+{
+    var ctx = new ValidationContext(book);
+    var results = new List<ValidationResult>();
+    
+    bool isValid = Validator.TryValidateObject(book, ctx, results, true);
+
+    if (!isValid)
+    {
+        return Results.BadRequest(results);
+    }
+
+    book_list.Add(book);
+    return Results.Created($"/api/books/{book.Id}", book);
+});
+
+app.Run();
+
+// Book model with validation attributes
+public class Book
+{
+    [Required]
+    public int Id { get; set; }
+
+    [Required]
+    [StringLength(100, MinimumLength = 3)]
+    public string Title { get; set; }
+
+    [Range(1, 2000)]
+    public int Pages { get; set; }
+}
+```
 
 ## Exercise 9: API Documentation with OpenAPI
 
 ### Narrative:
 
+In earlier exercises, we used Swagger UI to explore and test various API endpoints. But behind Swagger lies the OpenAPI Specification — a standardized format that describes your API's structure, including endpoints, inputs, responses, and documentation. 
 
+This specification allows tools like Postman, Swagger UI, NSwag, or Azure API Management to understand and interact with your API automatically.
+
+ASP.NET Core Minimal APIs support OpenAPI generation by default. When you enable the following in Program.cs:
+
+csharp
+Copy
+Edit
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+ASP.NET Core will scan your endpoints and generate the OpenAPI document at runtime. You can access this document as raw JSON at /swagger/v1/swagger.json.
+
+To improve the clarity and usability of this documentation, we can add metadata directly to our endpoints. For example:
+
+```csharp
+app.MapPost("/api/items", (Item newItem) =>
+{
+    // logic to add item
+})
+.WithName("CreateItem")
+.WithSummary("Adds a new item")
+.WithDescription("Accepts a validated Item object and stores it.");
+```
+In this:
+
+- `.WithName()` assigns a unique identifier to the operation.
+- `.WithSummary()` adds a short label that shows up in the UI.
+- `.WithDescription()` adds a longer explanation to help others understand what the endpoint does.
+
+In addition to naming and describing endpoints, we can improve the specification by describing what our endpoint accepts and returns using `.Accepts<T>()` and `.Produces<T>()`. 
+
+For example:
+```csharp
+app.MapPost("/api/items", (Item newItem) =>
+{
+    // logic to add item
+})
+.Accepts<Item>("application/json")
+.Produces<Item>(StatusCodes.Status201Created)
+.Produces<List<ValidationResult>>(StatusCodes.Status400BadRequest);
+```
+
+In this:
+- `.Accepts<T>()` tells OpenAPI what the expected input type is. In this example, the endpoint expects a JSON object that matches the `Item` class.
+- `.Produces<T>()` describes the possible response types and status codes the endpoint can return.
+      - `.Produces<Item>(StatusCodes.Status201Created)` tells OpenAPI that if the item is created successfully, the endpoint will return an `Item` object with a 201 (Created) status.
+      - `.Produces<List<ValidationResult>>(StatusCodes.Status400BadRequest)` tells OpenAPI that if the request is invalid (e.g., fails validation), it may return a list of validation errors with a 400 (Bad Request) status.
+
+
+Together, `.Accepts<T>()` and `.Produces<T>()` make our API self-documenting — anyone reading the OpenAPI spec can understand what input to send and what output to expect, without needing to read the source code.
+
+To further improve readability and structure in Swagger UI, we can group related endpoints using `.WithTags()`. 
+
+For example:
+
+```csharp
+app.MapPost("/api/items", (Item newItem) =>
+{
+    // logic to add item
+})
+.WithTags("Products");
+```
+
+In Swagger UI, this endpoint will appear under a collapsible section titled “Products”. We can group related endpoints (like /api/products, /api/book, etc.) under the same tag. This helps organize large APIs.
+
+<img width="2004" height="477" alt="image" src="https://github.com/user-attachments/assets/e76f2438-cd95-4ff0-8112-0b69c13babc0" />
+
+
+
+Together, these enhancements makes our OpenAPI documentation much more useful. 
+
+Let’s now apply these improvements to your `Book` API.
 
 ### Instructions:
 
-1. Checkpoint: 
-Hint:
-   
-2. Checkpoint: 
+1. Checkpoint: Open `localhost:8000/swagger/v1/swagger.json` in your browser and observe the structure of the generated OpenAPI specification. Take a moment to scan it. You’ll notice the structure includes paths, methods, parameters, and schema definitions for your `Book` model.
 
-Hint: 
+2. Checkpoint:  Now that we’ve seen the OpenAPI structure, let’s make the `/api/books` GET endpoint more descriptive.
+
+Navigate to where you define this route in your code and add metadata using `.WithName()`, `.WithSummary()`, and `.WithDescription()`. 
+
+Hint: You can chain these methods directly after `MapGet(...)`.
+
+3. Checkpoint: Let’s improve the /api/books POST endpoint. Use `.Accepts<Book>()` to declare the expected input model, and `.Produces<Book>()` to define what a successful response returns.
+ 
+Hint: You can chain these methods directly after `MapPost(...)`.
+
+4. Checkpoint: Organize your API better by adding `.WithTags("Books")` to both the GET and POST endpoints for `/api/books`.
 
 
 
-3. Checkpoint: 
+**Solution:**
 
-Hint: 
+```csharp
+
+using System.ComponentModel.DataAnnotations;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+
+var book_list = new List<Book>();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+
+app.MapGet("/api/books", () => book_list)
+.WithName("GetAllBooks")
+.WithSummary("Retrieves all books")
+.WithDescription("Returns the complete list of books stored in memory.")
+.WithTags("Books");
+
+app.MapPost("/api/books", (Book book) =>
+{
+    var ctx = new ValidationContext(book);
+    var results = new List<ValidationResult>();
+    
+    bool isValid = Validator.TryValidateObject(book, ctx, results, true);
+
+    if (!isValid)
+    {
+        return Results.BadRequest(results);
+    }
+
+    book_list.Add(book);
+    return Results.Created($"/api/books/{book.Id}", book);
+})
+.Accepts<Book>("application/json")
+.Produces<Book>(StatusCodes.Status201Created)
+.WithTags("Books");
+
+app.Run();
+
+public class Book
+{
+    [Required]
+    public int Id { get; set; }
+
+    [Required]
+    [StringLength(100, MinimumLength = 3)]
+    public string Title { get; set; }
+
+    [Range(1, 2000)]
+    public int Pages { get; set; }
+}
+```
 
 ## Exercise 10: Summary
 
