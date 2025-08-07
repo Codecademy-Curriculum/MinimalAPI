@@ -63,7 +63,7 @@ To run the app:
    
 The terminal will display a local URL such as `https://localhost:5074`.
 
-<img width="1120" height="403" alt="image" src="https://github.com/user-attachments/assets/798a89c2-b458-4c54-961e-aa763c881222" />
+<img width="788" height="283" alt="image" src="https://github.com/user-attachments/assets/47849c29-ce9c-4836-b23f-28c56648c504" />
 
 
 In most development environments, we would open this URL in a browser to view the API’s response. 
