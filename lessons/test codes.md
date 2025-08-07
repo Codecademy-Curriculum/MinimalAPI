@@ -1,1 +1,31 @@
+# Introduction to Minimal API
+
+## Exercise 1: Getting Started with Minimal API
+
+1. Checkpoint: Open the terminal and run a command that creates a new Minimal API web app inside the current folder.
+
+Hint: Use `dotnet new web` syntax to create your Minimal API project.
+
+```
+var validCommands = ['dotnet new web', 'dotnet new web -o '];
+if (Components.Terminal.didRunOneOf(validCommands, 0)) {
+    return {pass: true};
+}
+var combinedCommands = [validCommands.slice(0, -1).join(', '), validCommands.slice(-1)[0]].join(validCommands.length < 2 ? '' : ' or ');
+return {
+  pass: false,
+  errors: {
+    friendly: 'Did you run ' + combinedCommands + ' in the terminal?'
+  }
+};
+```
+   
+2. Checkpoint: Open the `Program.cs` file. Click the Run button to see what is printed to the screen. Observe the response in the browser.
+
+
+
+
+3. Checkpoint: In the `Program.cs` file, find the line that defines the `MapGet()` method. Change the response from "Hello World!" to a custom string of your choice, such as your name or a greeting.
+
+Hint: Replace the string inside `() => "Hello World!"` with any other string, like `"Hi from Sarah!"`. 
 
