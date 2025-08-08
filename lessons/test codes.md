@@ -29,3 +29,48 @@ return {
 
 Hint: Replace the string inside `() => "Hello World!"` with any other string, like `"Hi from Sarah!"`. 
 
+```
+if (Components.CodeEditor.codeContains('Program.cs', /Hello World!/)) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Did you update the `/` endpoint to return a custom message instead of "Hello World!"?',
+      component: 'PersistentCodeEditor'
+    }
+  };
+}
+return { pass: true };
+```
+## Exercise 2: Basic GET Endpoints 
+### Instructions:
+
+1. Checkpoint: Let’s start by adding a friendly message.
+
+Create a new GET endpoint that listens at `/hello` and returns the text `"Hello from /hello endpoint"`. Once added, click the Run button and visit `https://localhost:8000/hello` to see the result in your browser.
+
+Hint: Use the `app.MapGet()` method like this:
+```cs
+app.MapGet("/hello", () => /* your message here */);
+```
+
+
+2. Checkpoint: Next, return the current time by adding a new GET endpoint at `/time` that returns the current UTC time.
+
+After running the app, go to `https://localhost:8000/time` and check the output.
+
+Hint: Inside the lambda, return `DateTime.UtcNow` to get the correct format.
+
+
+3. Checkpoint: Now let’s send back some structured information.
+
+Create a GET endpoint at `/info` that returns an object with two properties — like `name` and `version`. ASP.NET Core will automatically convert it to JSON for us.
+
+Then, visit `https://localhost:8000/info` to view the response in JSON format.
+
+Hint: Return something like `new { name = "...", version = "..." }` inside the lambda.
+
+4. Checkpoint: Finally, test all three endpoints using Swagger.
+
+We have already enabled Swagger for you. Just open `https://localhost:8000/swagger` in the browser, click **Try it out** next to each endpoint, and execute the request to see the response.
+  
+
