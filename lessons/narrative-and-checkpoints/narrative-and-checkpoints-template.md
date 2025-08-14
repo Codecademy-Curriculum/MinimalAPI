@@ -16,7 +16,7 @@ Why this helps:
 - Ideal for small apps 
 
 To create a project in the current folder, we run:
-```bash
+```plaintext
 dotnet new web
 ```
 
