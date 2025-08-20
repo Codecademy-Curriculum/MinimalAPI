@@ -166,7 +166,18 @@ Replace `<FAVORITE_COLOR>` with the value from the route parameter. After adding
 
 Hint: Use string `favorite_color` inside the lambda.
 
+```js
+if (!Components.CodeEditor.codeContains('Program.cs', /app\.MapGet\(\s*["']\/color\/\{favorite_color\}["']\s*,\s*\(\s*string\s+favorite_color\s*\)\s*=>\s*.*\);/)) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Did you create an endpoint `/color/{favorite_color}` that takes a color as a route parameter and returns a message?'
+    }
+  };
+}
 
+return { pass: true };
+```
    
 2. Checkpoint: Now let’s handle numbers using constraints.
 
@@ -177,6 +188,19 @@ Replace `<ORDER_NUMBER>` with the value from the route parameter. Make sure the 
 Try visiting `/order/1234` to see the successful response.
 
 Hint: Add `:int` after the parameter name in the URL pattern.
+
+```js
+if (!Components.CodeEditor.codeContains('Program.cs', /app\.MapGet\(\s*["']\/order\/\{order_number:int\}["']\s*,\s*\(\s*int\s+order_number\s*\)\s*=>\s*.*\);/)) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Did you create an endpoint `/order/{order_number:int}` that takes an integer order number and returns a message?'
+    }
+  };
+}
+
+return { pass: true };
+```
 
 3. Checkpoint: Let’s try returning a full object.
 
@@ -192,9 +216,36 @@ Try visiting `/book/9781234567890` and check the JSON response.
 
 Hint: Use `new { isbn = isbn, title = "...", available = true }` inside the lambda.
 
+```js
+if (!Components.CodeEditor.codeContains('Program.cs',/app\.MapGet\(\s*["']\/book\/\{isbn\}["']\s*,\s*\(\s*string\s+isbn\s*\)\s*=>\s*new\s*\{\s*isbn\s*=\s*isbn\s*,\s*title\s*=\s*.*\s*,\s*available\s*=\s*.*\s*\}\s*\);/)) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Did you create an endpoint `/book/{isbn}` that accepts an ISBN and returns an object with `isbn`, `title`, and `available` properties?'
+    }
+  };
+}
+
+return { pass: true };
+```
+
 4. Checkpoint: You can also test all three endpoints using Swagger.
    
 Open `https://localhost:8000/swagger` in the browser, click **Try it out** next to each endpoint, and hit Execute to see the response.
+
+```js
+var validUrls = ['https://localhost:8000/swagger', 'https://localhost:8000/swagger/index.html'];
+if (Components.WebBrowser.loadedOneOf(validUrls)) {
+    return {pass: true};
+}
+var combinedUrls = [validUrls.slice(0, -1).join(', '), validUrls.slice(-1)[0]].join(validUrls.length < 2 ? '' : ' or ');
+return {
+  pass: false,
+  errors: {
+    friendly: 'Did you visit ' + combinedUrls + ' in the browser?'
+  }
+};
+```
 
 ## Exercise 4: Creating a Simple POST Endpoint
 
@@ -206,9 +257,43 @@ The response should be a message like: `Support request received: <YOUR_MESSAGE>
   
 Hint:  Use `MapPost()` with a string parameter and return `Results.Created()`.
 
+```js
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost\(\s*["']\/api\/support["']\s*,\s*\(\s*string\s+body\s*\)\s*=>?\s*\{\s*return\s+Results\.Created\(\s*["']\/api\/support["']\s*,\s*.*body.*\)\s*;\s*\}\s*\);/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create a POST endpoint at `/api/support` that accepts a string body and returns a `Results.Created` response containing that body?'
+    }
+  };
+}
+
+return { pass: true };
+```
+
 2. Checkpoint: Use Swagger UI to send a test message to your `/api/support` POST endpoint. Confirm that the response returns `201 Created` with your input message.
 
 Hint: In Swagger UI, click "Try it out" next to `/api/support`, enter a sample message like `My app keeps crashing on login.`, and hit "Execute" to see the response.
+
+```js
+var validUrls = ['https://localhost:8000/swagger', 'https://localhost:8000/swagger/index.html'];
+if (Components.WebBrowser.loadedOneOf(validUrls)) {
+    return {pass: true};
+}
+var combinedUrls = [validUrls.slice(0, -1).join(', '), validUrls.slice(-1)[0]].join(validUrls.length < 2 ? '' : ' or ');
+return {
+  pass: false,
+  errors: {
+    friendly: 'Did you visit ' + combinedUrls + ' in the browser?'
+  }
+};
+```
+
 
 ## Exercise 5: Accepting JSON Using Model Binding
 
@@ -218,6 +303,73 @@ Hint: In Swagger UI, click "Try it out" next to `/api/support`, enter a sample m
 
 Hint: Create a class just like the `Item` class shown earlier. Remember, class names start with uppercase and the property names must match the JSON field names.
 
+```js
+// Check if the MovieDetails class is created
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /public\s+class\s+MovieDetails\s*\{[\s\S]*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create a `MovieDetails` class with the required properties?'
+    }
+  };
+}
+
+// Check if the Title property exists (type must be string)
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /public\s+string\s+Title\s*\{\s*get;\s*set;\s*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Does your `MovieDetails` class have a `Title` property of type `string`?'
+    }
+  };
+}
+
+// Check if the Year property exists (type must be int)
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /public\s+int\s+Year\s*\{\s*get;\s*set;\s*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Does your `MovieDetails` class have a `Year` property of type `int`?'
+    }
+  };
+}
+
+// Ensure the class is defined after app.Run();
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.Run\(\)[\s\S]*public\s+class\s+MovieDetails/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Make sure the `MovieDetails` class is placed **after** the `app.Run();` statement.'
+    }
+  };
+}
+
+return { pass: true };
+```
 
 2. Checkpoint: Define a new POST endpoint at `/api/movies` that accepts a `MovieDetails` object from the request body. The endpoint should:
    
@@ -225,6 +377,42 @@ Hint: Create a class just like the `Item` class shown earlier. Remember, class n
 - Respond with a 201 Created status including the URI with `new_movie.Year` as the location
 
 Hint: Use `app.MapPost("/api/movies", (MovieDetails movie) => …)` with the route `/api/movies`. Use `Results.Created()` to return the submitted data.
+
+```js
+// Check if the MapPost endpoint exists with correct route and MovieDetails parameter
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost\(\s*["']\/api\/movies["']\s*,\s*\(\s*MovieDetails\s+\w+\s*\)\s*=>\s*\{[\s\S]*?\}\s*\);/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you add a `MapPost` endpoint for `/api/movies` that accepts a `MovieDetails` parameter and returns a created result?'
+    }
+  };
+}
+
+// Check if Results.Created is used with new_movie
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /Results\.Created\s*\(\s*\$?["']\/api\/movies\/\{?\w+\.Year\}?["']\s*,\s*\w+\s*\)/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Are you using `Results.Created` with a path including the movie year and returning the movie object?'
+    }
+  };
+}
+
+return { pass: true };
+```
 
 3. Checkpoint: Locate the POST `/api/movies` endpoint in Swagger UI and and click **Try it out**. Paste the following JSON into the request body:
 
@@ -255,6 +443,86 @@ You should see:
 1. Checkpoint: Create a class named `Book` below the `app.Run()` line in `Program.cs`. It should have three properties: `Id` (int), `Title` (string), and `Pages` (int).
 
 Hint: Follow the same format as the `Item` class shown earlier. Each property should use `{ get; set; }`.
+
+```js
+// Check if the Book class is created
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /public\s+class\s+Book\s*\{[\s\S]*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create a `Book` class with the required properties?'
+    }
+  };
+}
+
+// Check if the Id property exists (type must be int)
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /public\s+int\s+Id\s*\{\s*get;\s*set;\s*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Does your `Book` class have an `Id` property of type `int`?'
+    }
+  };
+}
+
+// Check if the Title property exists (type must be string)
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /public\s+string\s+Title\s*\{\s*get;\s*set;\s*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Does your `Book` class have a `Title` property of type `string`?'
+    }
+  };
+}
+
+// Check if the Pages property exists (type must be int)
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /public\s+int\s+Pages\s*\{\s*get;\s*set;\s*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Does your `Book` class have a `Pages` property of type `int`?'
+    }
+  };
+}
+
+// Ensure the class is defined after app.Run();
+if (!Components.CodeEditor.codeContains('Program.cs', /app\.Run\(\);\s*[\s\S]*?public\s+class\s+Book/)) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Make sure the Book class is placed **after** the app.Run(); statement.'
+    }
+  };
+}
+
+
+return { pass: true };
+```
+
 
 2. Checkpoint: Create a new in-memory list to hold `Book` objects after `var app = builder.Build();`. This list will store the data submitted to the API.
 
