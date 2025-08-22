@@ -411,7 +411,24 @@ if (
   };
 }
 
+// Ensure MapPost is defined before app.Run();
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost[\s\S]*app\.Run\(\);/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Make sure the `app.MapPost()` endpoint is defined **before** the `app.Run();` statement.'
+    }
+  };
+}
+
 return { pass: true };
+
 ```
 
 3. Checkpoint: Locate the POST `/api/movies` endpoint in Swagger UI and and click **Try it out**. Paste the following JSON into the request body:
@@ -528,9 +545,65 @@ return { pass: true };
 
 Hint: It should be a `List<Book>` declared and initialized after `var app = builder.Build()`;.
 
+```js
+// Check if book_list is declared and contains at least one Book
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /var\s+book_list\s*=\s*new\s+List<Book>\s*\{\s*new\s+Book\s*\{[\s\S]*?\}\s*(?:,\s*new\s+Book\s*\{[\s\S]*?\}\s*)*\};/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create the `book_list` with at least **one** `Book` initialized?'
+    }
+  };
+}
+
+// Ensure book_list is placed **after** builder.Build() and **before** app.Run()
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /var\s+app\s*=\s*builder\.Build\(\);\s*[\s\S]*?var\s+book_list\s*=\s*new\s+List<Book>[\s\S]*?app\.Run\(\);/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Make sure the `book_list` is placed **after** `var app = builder.Build();` and **before** `app.Run();`.'
+    }
+  };
+}
+
+return { pass: true };
+```
+
 3. Checkpoint: Add a new POST endpoint at `/api/books`. It should accept a `Book` object from the request body, add it to the books list, and return a `201 Created` response containing the added book.
 
 Hint: Use `MapPost`, accept a `Book` object as input, and return `Results.Created(...)`.
+
+```js
+// Check if POST endpoint for /api/books exists, accepts Book, adds to list, and returns Results.Created
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost\s*\(\s*"\/api\/books"\s*,\s*\(\s*Book\s+\w+\s*\)\s*=>\s*\{\s*book_list\.Add\(\w+\);\s*return\s+Results\.Created\(\s*\$"\/api\/books\/\{\w+\.Id\}"\s*,\s*\w+\s*\);\s*\}\s*\)/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create a `POST` endpoint at `/api/books` that accepts a `Book`, adds it to `book_list`, and returns `Results.Created` with the book details?'
+    }
+  };
+}
+
+return { pass: true };
+```
 
 4. Checkpoint: Add a GET endpoint at `/api/books/title/{title}`. It should take the `title` from the route, search the list of books, and return the first match using a case-insensitive check. If no book matches, return a `404 Not Found`.
 
@@ -538,6 +611,27 @@ Hint: Use `ToLower()` and `Contains()` inside a `foreach` loop for partial, case
 
 ```cs
 if (b.Title != null && b.Title.ToLower().Contains(title.ToLower()))
+```
+
+```js
+// Check if GET endpoint for /api/books/title/{title} exists, iterates over book_list,
+// matches title using ToLower + Contains, and returns Results.Ok or Results.NotFound
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapGet\s*\(\s*"\/api\/books\/title\/\{title\}"\s*,\s*\(\s*string\s+\w+\s*\)\s*=>\s*\{\s*foreach\s*\(\s*var\s+\w+\s+in\s+book_list\s*\)\s*\{\s*if\s*\(\s*\w+\.Title\s*!=\s*null\s*&&\s*\w+\.Title\.ToLower\(\)\.Contains\(\w+\.ToLower\(\)\)\s*\)\s*\{\s*return\s+Results\.Ok\(\w+\);\s*\}\s*\}\s*return\s+Results\.NotFound\(\);\s*\}\s*\)/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create a `GET` endpoint at `/api/books/title/{title}` that searches `book_list` using `ToLower().Contains()` and returns `Results.Ok` or `Results.NotFound`?'
+    }
+  };
+}
+
+return { pass: true };
 ```
 
 5. Checkpoint: In Swagger UI, test the POST `/api/books` endpoint. Click **Try it out**, and submit this JSON:
@@ -560,13 +654,73 @@ Then test the GET `/api/books/title/{title}` endpoint by entering `The Hobbit` a
 
 Hint: Use `app.MapGet("/api/books", () => book_list);` to return the complete list.
 
+```js
+// Ensure the GET endpoint for /api/books is defined after book_list initialization and before app.Run()
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /book_list\s*=\s*new\s+List<Book>[\s\S]*?app\.MapGet\s*\(\s*"\/api\/books"\s*,\s*\(\s*\)\s*=>\s*book_list\s*\)[\s\S]*?app\.Run\s*\(\s*\)\s*;/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create a `GET` endpoint at `/api/books` **after** `book_list` initialization and **before** the `app.Run();` statement? Ensure it directly returns the `book_list`.'
+    }
+  };
+}
+
+return { pass: true };
+```
+
 2. Checkpoint: Add a PUT endpoint at `/api/books/{id}`. This should update the book with the given ID using the data from the request body. If the book is found, update its values. If not, return `404 Not Found`.
 
 Hint: Loop through `book_list`, match the `id`, and replace the book. 
 
+```js
+// Ensure the PUT endpoint is defined after book_list initialization and before app.Run()
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /book_list\s*=\s*new\s+List<Book>[\s\S]*?app\.MapPut\s*\(\s*"\/api\/books\/\{id\}"\s*,\s*\(\s*int\s+id\s*,\s*Book\s+\w+\s*\)\s*=>\s*\{[\s\S]*?for\s*\(\s*int\s+i\s*=\s*0\s*;\s*i\s*<\s*book_list\.Count\s*;\s*i\+\+\s*\)\s*\{[\s\S]*?if\s*\(\s*book_list\[i\]\.Id\s*==\s*id\s*\)[\s\S]*?book_list\[i\]\s*=\s*\w+\s*;[\s\S]*?return\s+Results\.Ok\s*\(\s*\w+\s*\)\s*;[\s\S]*?\}[\s\S]*?return\s+Results\.NotFound\s*\(\s*\)\s*;[\s\S]*?\}\s*\)[\s\S]*?app\.Run\s*\(\s*\)\s*;/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create a `PUT` endpoint at `/api/books/{id}` **after** `book_list` initialization and **before** the `app.Run();` statement? Ensure it updates the matching book and returns the updated object or NotFound().'
+    }
+  };
+}
+
+return { pass: true };
+```
+
 3. Checkpoint: Add a DELETE endpoint at `/api/books/{id}`. It should search for a book with the given ID, remove it if it exists, and return `204 No Content`. If no match is found, return `404 Not Found`.
 
 Hint: Use `FirstOrDefault()` to find the book, then call `book_list.Remove()` if it exists. 
+
+```js
+// Ensure the DELETE endpoint for /api/books/{id} is defined after book_list initialization and before app.Run()
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /book_list\s*=\s*new\s+List<Book>[\s\S]*?app\.MapDelete\s*\(\s*"\/api\/books\/\{id\}"\s*,\s*\(\s*int\s+\w+\s*\)\s*=>\s*\{[\s\S]*?var\s+\w+\s*=\s*book_list\.FirstOrDefault\s*\(\s*p\s*=>\s*p\.Id\s*==\s*\w+\s*\);[\s\S]*?if\s*\(\s*\w+\s+is\s+null\s*\)[\s\S]*?return\s+Results\.NotFound\s*\(\s*\)\s*;[\s\S]*?book_list\.Remove\s*\(\s*\w+\s*\)\s*;[\s\S]*?return\s+Results\.NoContent\s*\(\s*\)\s*;[\s\S]*?\}[\s\S]*?app\.Run\s*\(\s*\)\s*;/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Did you create a `DELETE` endpoint at `/api/books/{id}` **after** `book_list` initialization and **before** the `app.Run();` statement? Ensure it removes the correct book or returns NotFound, and then returns NoContent.'
+    }
+  };
+}
+
+return { pass: true };
+```
 
 4. Checkpoint: In Swagger UI,
 
@@ -609,18 +763,143 @@ Hint: In Swagger UI, make sure to execute each endpoint in the right order. Use 
 Make sure both `Id` and `Title` are marked as required fields. The `Title` must be between `3` and `100` characters, and the `Pages` value should be within a reasonable range.
 
 Hint: Use `[Required]` on both `Id` and `Title`, `[StringLength(100, MinimumLength = 3)]` to limit title length, and `[Range(1, 2000)]` to ensure pages are within bounds.
+
+```js
+// Check if Book class exists
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /public\s+class\s+Book\s*\{[\s\S]*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Did you create a `Book` class with the required properties?'
+    }
+  };
+}
+
+// Check if Id property has [Required] attribute
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /\[Required\]\s*public\s+int\s+Id\s*\{\s*get;\s*set;\s*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Does the `Id` property in `Book` have the `[Required]` attribute?'
+    }
+  };
+}
+
+// Check if Title property has [Required] and [StringLength(100, MinimumLength = 3)]
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /\[Required\]\s*\[StringLength\s*\(\s*100\s*,\s*MinimumLength\s*=\s*3\s*\)\]\s*public\s+string\s+Title\s*\{\s*get;\s*set;\s*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Does the `Title` property in `Book` have `[Required]` and `[StringLength(100, MinimumLength = 3)]` attributes?'
+    }
+  };
+}
+
+// Check if Pages property has [Range(1, 2000)]
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /\[Range\s*\(\s*1\s*,\s*2000\s*\)\]\s*public\s+int\s+Pages\s*\{\s*get;\s*set;\s*\}/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Does the `Pages` property in `Book` have `[Range(1, 2000)]` attribute?'
+    }
+  };
+}
+
+return { pass: true };
+```
   
 2. Checkpoint: Inside the POST `/api/books` endpoint, set up a validation context for the incoming book so the system knows which object to check.
 
 Hint: Pass the book object into `new ValidationContext(book)`.
 
+```js
+// Ensure ValidationContext is created inside the POST endpoint for /api/books 
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost\s*\(\s*"\/api\/books"\s*,\s*\(\s*Book\s+\w+\s*\)\s*=>\s*\{[\s\S]*?var\s+.*\s*=\s*new\s+ValidationContext\s*\(\s*\w+\s*\)\s*;[\s\S]*?book_list\.Add\s*\(\s*\w+\s*\)/ 
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Inside the POST endpoint at `/api/books`, did you create a `ValidationContext` for the book object before adding it to the book list?'
+    }
+  };
+}
+
+return { pass: true };
+```
+
 3. Checkpoint: Prepare a container to hold any validation errors detected during the check.
 
 Hint: A `List<ValidationResult>` works well for this.
+
+```js
+// Ensure ValidationResult list is created inside the POST endpoint for /api/books 
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost\s*\(\s*"\/api\/books"\s*,\s*\(\s*Book\s+\w+\s*\)\s*=>\s*\{[\s\S]*?var\s+.*\s*=\s*new\s+ValidationContext\s*\(\s*\w+\s*\)\s*;[\s\S]*?var\s+.*\s*=\s*new\s+List<ValidationResult>\s*\(\s*\)/ 
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Inside the POST endpoint at `/api/books`, did you create a list of `ValidationResult` objects to store validation results?'
+    }
+  };
+}
+
+return { pass: true };
+```
    
 4. Checkpoint: Run the validation process to ensure the book meets all rules using `Validator.TryValidateObject()`. If validation fails, return a 400 Bad Request containing the error details. If valid, add it to the list.
 
 Hint: Pass the book, context, results list, and `true` to `Validator.TryValidateObject()` to validate all properties. Return `Results.BadRequest(results)` when validation fails.
+
+```js
+// Ensure Validator.TryValidateObject with book and 'true', and BadRequest logic exist in POST /api/books endpoint
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost\s*\(\s*"\/api\/books"\s*,\s*\(\s*Book\s+\w+\s*\)\s*=>\s*\{[\s\S]*?bool\s+\w+\s*=\s*Validator\.TryValidateObject\s*\(\s*book\s*,\s*ctx\s*,\s*results\s*,\s*true\s*\)\s*;[\s\S]*?if\s*\(\s*!\w+\s*\)[\s\S]*?return\s+Results\.BadRequest\s*\(\s*results\s*\)/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Inside the POST endpoint at `/api/books`, did you validate the book object using `Validator.TryValidateObject(book, ctx, results, true)` and return `Results.BadRequest(results)` if it is invalid?'
+    }
+  };
+}
+
+return { pass: true };
+```
 
 5. Checkpoint: Now test your endpoint using Swagger UI.
    
@@ -649,17 +928,107 @@ You should get `400 Bad Request` responses with specific validation errors.
 
 1. Checkpoint: Open `localhost:8000/swagger/v1/swagger.json` in your browser and observe the structure of the generated OpenAPI specification. Take a moment to scan it. You’ll notice the structure includes paths, methods, parameters, and schema definitions for your `Book` model.
 
+```js
+var validUrls = ['https://localhost:8000/swagger/v1/swagger.json'];
+if (Components.WebBrowser.loadedOneOf(validUrls)) {
+    return {pass: true};
+}
+var combinedUrls = [validUrls.slice(0, -1).join(', '), validUrls.slice(-1)[0]].join(validUrls.length < 2 ? '' : ' or ');
+return {
+  pass: false,
+  errors: {
+    friendly: 'Did you visit ' + combinedUrls + ' in the browser?'
+  }
+};
+```
+
 2. Checkpoint: Now that we’ve seen the OpenAPI structure, let’s make the `/api/books` GET endpoint more descriptive.
 
-Navigate to where you define this route in your code and add metadata using `.WithName()`, `.WithSummary()`, and `.WithDescription()`. 
+Add metadata to the GET endpoint using `.WithName()`, `.WithSummary()`, and `.WithDescription()`.
+
+Open Swagger at `https://localhost/swagger` and observe the metadata in the `/api/books` GET endpoint.
 
 Hint: You can chain these methods directly after `MapGet(...)`.
+
+```js
+// Ensure .WithName, .WithSummary, and .WithDescription are chained to the GET endpoint before the semicolon
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapGet\s*\(\s*["']\/api\/books["']\s*,\s*\(\s*\)\s*=>[\s\S]*?\)\s*[\s\S]*?\.WithName\s*\(.*?\)\s*\.WithSummary\s*\(.*?\)\s*\.WithDescription\s*\(.*?\)\s*;/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Make sure `.WithName()`, `.WithSummary()`, and `.WithDescription()` are chained to the GET endpoint at `/api/books`, and all appear before the semicolon.'
+    }
+  };
+}
+
+return { pass: true };
+```
 
 3. Checkpoint: Let’s improve the /api/books POST endpoint. Use `.Accepts<Book>()` to declare the expected input model, and `.Produces<Book>()` to define what a successful response returns.
  
 Hint: You can chain these methods directly after `MapPost(...)`.
 
+```js
+// Ensure .Accepts and .Produces are chained to the POST endpoint before the semicolon
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost\s*\(\s*["']\/api\/books["']\s*,\s*\(Book\s+\w+\)\s*=>[\s\S]*?\)[\s\S]*?\.Accepts\s*<\s*Book\s*>\s*\(\s*["']application\/json["']\s*\)\s*\.Produces\s*<\s*Book\s*>\s*\(\s*StatusCodes\.Status201Created\s*\)\s*;/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly:
+        'Make sure `.Accepts<Book>("application/json")` and `.Produces<Book>(StatusCodes.Status201Created)` are chained to the POST endpoint at `/api/books`, and all appear before the semicolon.'
+    }
+  };
+}
+
+return { pass: true };
+```
+
 4. Checkpoint: Organize your API better by adding `.WithTags("Books")` to both the GET and POST endpoints for `/api/books`.
+
+```js
+// Ensure .WithTags("Books") is chained to the GET endpoint 
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapGet\s*\(\s*["']\/api\/books["']\s*,\s*\(\s*\)\s*=>[\s\S]*?\)\s*[\s\S]*?\.WithName\s*\(.*?\)\s*\.WithSummary\s*\(.*?\)\s*\.WithDescription\s*\(.*?\)\s*\.WithTags\s*\(\s*["']Books["']\s*\)\s*;/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Make sure `.WithTags("Books")` is chained to the GET endpoint at `/api/books`, and appear before the semicolon.'
+    }
+  };
+}
+
+// Ensure .WithTags("Books") is chained to the POST endpoint 
+if (
+  !Components.CodeEditor.codeContains(
+    'Program.cs',
+    /app\.MapPost\s*\(\s*["']\/api\/books["']\s*,\s*\(Book\s+\w+\)\s*=>[\s\S]*?\)\s*[\s\S]*?\.Accepts\s*<\s*Book\s*>\s*\(\s*["']application\/json["']\s*\)\s*\.Produces\s*<\s*Book\s*>\s*\(\s*StatusCodes\.Status201Created\s*\)\s*\.WithTags\s*\(\s*["']Books["']\s*\)\s*;/
+  )
+) {
+  return {
+    pass: false,
+    errors: {
+      friendly: 'Make sure `.WithTags("Books")` is chained to the POST endpoint at `/api/books`, and appear before the semicolon.'
+    }
+  };
+}
+
+return { pass: true };
+```
 
 ## Exercise 10: Review
 
